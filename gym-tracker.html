@@ -2401,28 +2401,26 @@ input::placeholder { color: var(--text-4); }
   </header>
 
   <main class="page" id="page"></main>
-</div>
 
-<!-- Bottom nav lives outside .app so the user-controlled `zoom` on .app
-     doesn't shift its `position: fixed; bottom: 0` anchor. -->
-<nav class="bottom-nav" id="bottom-nav" aria-label="Main navigation">
-  <button class="bottom-nav-btn" data-view="home">
-    <svg viewBox="0 0 24 24"><use href="#icon-home"/></svg>
-    <span>Dashboard</span>
-  </button>
-  <button class="bottom-nav-btn" data-view="train">
-    <svg viewBox="0 0 24 24"><use href="#icon-dumbbell"/></svg>
-    <span>Log</span>
-  </button>
-  <button class="bottom-nav-btn" data-view="routine">
-    <svg viewBox="0 0 24 24"><use href="#icon-grid"/></svg>
-    <span>Split</span>
-  </button>
-  <button class="bottom-nav-btn" data-view="history">
-    <svg viewBox="0 0 24 24"><use href="#icon-history"/></svg>
-    <span>History</span>
-  </button>
-</nav>
+  <nav class="bottom-nav" id="bottom-nav" aria-label="Main navigation">
+    <button class="bottom-nav-btn" data-view="home">
+      <svg viewBox="0 0 24 24"><use href="#icon-home"/></svg>
+      <span>Dashboard</span>
+    </button>
+    <button class="bottom-nav-btn" data-view="train">
+      <svg viewBox="0 0 24 24"><use href="#icon-dumbbell"/></svg>
+      <span>Log</span>
+    </button>
+    <button class="bottom-nav-btn" data-view="routine">
+      <svg viewBox="0 0 24 24"><use href="#icon-grid"/></svg>
+      <span>Split</span>
+    </button>
+    <button class="bottom-nav-btn" data-view="history">
+      <svg viewBox="0 0 24 24"><use href="#icon-history"/></svg>
+      <span>History</span>
+    </button>
+  </nav>
+</div>
 
 <div class="toast" id="toast"></div>
 
@@ -2433,7 +2431,7 @@ input::placeholder { color: var(--text-4); }
    VERSION
    ──────────────────────────────────────────── */
 
-const APP_VERSION = '1.7.2';
+const APP_VERSION = '1.7.3';
 const APP_BUILD_DATE = '2026-05-05';
 
 /* ────────────────────────────────────────────
