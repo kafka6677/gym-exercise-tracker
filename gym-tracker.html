@@ -6,7 +6,7 @@
 <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
 <meta http-equiv="Pragma" content="no-cache">
 <meta http-equiv="Expires" content="0">
-<meta name="theme-color" content="#08080b">
+<meta name="theme-color" content="#000000">
 <meta name="apple-mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
 <meta name="apple-mobile-web-app-title" content="GymLog">
@@ -63,21 +63,14 @@ html, body {
 .app { zoom: var(--ui-scale, 1); }
 
 body {
-  /* iOS PWA's `100dvh` excludes the home-indicator safe-area zone, so a
-     body of height 100dvh leaves that zone empty — that's the big gap
-     between the nav and the home-indicator pill. Adding
-     `env(safe-area-inset-bottom)` makes body extend INTO that zone so the
-     in-flow bottom nav lands right next to the home indicator pill. */
-  position: fixed;
-  top: 0;
-  left: 0;
-  width: 100vw;
+  /* In normal flow (no position:fixed) — a fixed body was preventing iOS
+     from focusing inputs / opening the keyboard. Body height = 100dvh
+     (visible viewport). The home-indicator safe-area zone below body is
+     covered by the html element's pure-black background, which iOS lets
+     show through with viewport-fit=cover. */
+  width: 100%;
   height: 100vh;
   height: 100dvh;
-  height: calc(100dvh + env(safe-area-inset-bottom, 0px));
-  /* JS-set --app-height uses screen.height in portrait — the only reliable
-     full-screen value on iOS PWA. Last declaration wins when supported. */
-  height: var(--app-height, calc(100dvh + env(safe-area-inset-bottom, 0px)));
   display: flex;
   flex-direction: column;
 
@@ -2415,7 +2408,7 @@ input::placeholder { color: var(--text-4); }
    VERSION
    ──────────────────────────────────────────── */
 
-const APP_VERSION = '1.4.3';
+const APP_VERSION = '1.4.4';
 const APP_BUILD_DATE = '2026-05-05';
 
 /* ────────────────────────────────────────────
@@ -4862,32 +4855,8 @@ function attachSettingsHandlers() {
    INIT
    ──────────────────────────────────────────── */
 
-/* iOS PWA: 100vh / 100dvh / window.innerHeight all report the layout viewport
-   which excludes the home-indicator safe-area zone. screen.height reports the
-   full device-screen height in CSS px and is the only reliable source for
-   "the literal screen edge" in PWA portrait mode. We pick the largest of all
-   measurements so it works in both orientations and on devices without a
-   safe area. */
-function setAppHeight() {
-  const isPortrait = (window.matchMedia && window.matchMedia('(orientation: portrait)').matches) ||
-                     (window.innerHeight >= window.innerWidth);
-  const candidates = [
-    window.innerHeight || 0,
-    document.documentElement.clientHeight || 0,
-    (window.visualViewport && window.visualViewport.height) || 0,
-  ];
-  if (isPortrait) candidates.push(screen.height || 0);
-  const h = Math.max.apply(null, candidates);
-  document.documentElement.style.setProperty('--app-height', h + 'px');
-}
-setAppHeight();
-window.addEventListener('resize', setAppHeight);
-window.addEventListener('load', setAppHeight);
-window.addEventListener('pageshow', setAppHeight);
-window.addEventListener('orientationchange', () => setTimeout(setAppHeight, 100));
-if (window.visualViewport) {
-  window.visualViewport.addEventListener('resize', setAppHeight);
-}
+// (Body sizing now uses pure CSS — 100dvh — without JS measurement.
+//  Earlier attempts to inject screen.height clipped the bottom nav off-screen.)
 
 // Block pinch-zoom on iOS Safari, which honours neither `user-scalable=no`
 // nor `touch-action` consistently across versions. Belt & braces.
