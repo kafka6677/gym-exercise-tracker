@@ -62,17 +62,17 @@ body {
   overscroll-behavior: none;
 }
 
-/* User-controlled UI scale via root font-size — `zoom` on .app caused
-   iOS PWA input-focus bugs and layout shifts during navigation, so it
-   moved here. (Most pixel-based sizes don't follow font-size, so the
-   scale primarily affects text. Buttons / spacing stay structural.) */
+/* UI scale via root font-size. Body inherits, descendants without explicit
+   font-size inherit too. Pixel-sized headings/buttons stay structural so
+   layout doesn't break, but body text scales. (CSS zoom causes iOS PWA
+   input-focus bugs, so we use this safer mechanism.) */
 :root { font-size: calc(14px * var(--ui-scale, 1)); }
 
 body {
   background: var(--bg);
   color: var(--text);
   font-family: -apple-system, BlinkMacSystemFont, "Inter", "Segoe UI", system-ui, sans-serif;
-  font-size: 14px;
+  font-size: 1rem;  /* inherits root font-size, so the UI-scale slider works */
   line-height: 1.5;
   -webkit-font-smoothing: antialiased;
 }
@@ -1412,16 +1412,17 @@ input::placeholder { color: var(--text-4); }
 
 .bottom-nav {
   display: none;
-  /* Symmetric padding (6px both sides). Background + backdrop-filter match
-     the topbar so the two chrome surfaces look the same. Buttons sit close
-     to the home-indicator pill — minimal gap. */
+  /* Same pattern as trading-journal mobile-nav — buttons sit at proper iOS
+     height with safe-area-inset-bottom as padding so they clear the home
+     indicator pill cleanly. Background + backdrop-filter match the topbar. */
   position: fixed;
   bottom: 0;
   left: 0;
   right: 0;
   z-index: 50;
+  height: calc(60px + env(safe-area-inset-bottom));
   padding-top: 6px;
-  padding-bottom: 6px;
+  padding-bottom: env(safe-area-inset-bottom);
   padding-left: calc(4px + env(safe-area-inset-left));
   padding-right: calc(4px + env(safe-area-inset-right));
   background: rgba(10, 10, 13, 0.85);
@@ -2435,7 +2436,7 @@ input::placeholder { color: var(--text-4); }
    VERSION
    ──────────────────────────────────────────── */
 
-const APP_VERSION = '1.8.2';
+const APP_VERSION = '1.8.3';
 const APP_BUILD_DATE = '2026-05-05';
 
 /* ────────────────────────────────────────────
@@ -3572,10 +3573,13 @@ function renderTabs() {
   $$('.topbar-icon-btn').forEach(el => el.classList.toggle('active', el.dataset.view === state.view));
 }
 
+let lastRenderedView = null;
 function renderPage() {
   const page = $('#page');
-  // Reset scroll on view change so each page starts at top.
-  page.scrollTop = 0;
+  // Preserve scroll position across in-view re-renders (toggling a set,
+  // editing a value, etc.) — only reset to top when changing tabs.
+  const isViewChange = lastRenderedView !== state.view;
+  const previousScrollTop = page.scrollTop;
   switch (state.view) {
     case 'home':     page.innerHTML = renderHome();     attachHomeHandlers(); break;
     case 'train':    page.innerHTML = renderTrain();    attachTrainHandlers(); break;
@@ -3583,6 +3587,8 @@ function renderPage() {
     case 'routine':  page.innerHTML = renderRoutine();  attachRoutineHandlers(); break;
     case 'settings': page.innerHTML = renderSettings(); attachSettingsHandlers(); break;
   }
+  page.scrollTop = isViewChange ? 0 : previousScrollTop;
+  lastRenderedView = state.view;
 }
 
 /* ─── HOME / DASHBOARD ─── */
