@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
 <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0, user-scalable=no, viewport-fit=cover">
 <meta name="theme-color" content="#08080b">
 <meta name="apple-mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
@@ -45,7 +45,11 @@ html { color-scheme: dark; }
   --shadow-lg: 0 8px 32px rgba(0, 0, 0, 0.5);
 }
 
-html, body { height: 100%; }
+html, body {
+  height: 100%;
+  /* Disable pinch-zoom & double-tap-zoom while still allowing vertical scrolling. */
+  touch-action: pan-y;
+}
 
 /* User-controlled UI scale. Applied to .app so the safe-area handling on
    the topbar/bottom-nav stays in actual viewport pixels. */
@@ -2165,27 +2169,19 @@ input::placeholder { color: var(--text-4); }
   /* Toast: mobile uses safe area + above bottom nav */
   .toast { bottom: calc(80px + env(safe-area-inset-bottom)); padding: 11px 16px; font-size: 13px; max-width: calc(100% - 32px); }
 
-  /* iOS Safari auto-zooms when focusing inputs with font-size < 16px,
-     which shifts the layout (the bottom nav appears to "jump"). Pin every
-     editable field to 16px on mobile. */
-  .set-input,
-  .routine-ex-num,
-  .routine-ex-name,
-  .session-date-input,
-  #picker-date,
-  .records-search,
-  .settings-input,
-  .settings-field input,
-  .add-exercise-form input,
-  .routine-day-dow {
-    font-size: 16px;
-  }
+  /* iOS Safari auto-zooms when focusing any form field with font-size < 16px,
+     which shifts the layout (the bottom nav appears to "jump"). Force every
+     input/select/textarea to 16px on mobile, with !important to win over any
+     other rule. The few intentionally-larger heading inputs are restored
+     below. */
+  input, select, textarea { font-size: 16px !important; }
+  .session-title-input { font-size: 24px !important; }
 }
 
 @media (max-width: 400px) {
   .sets-header,
   .set { grid-template-columns: 22px 1fr 1.8fr 38px 36px 30px; gap: 3px; padding: 6px 4px; }
-  .set-input { padding: 10px 1px; font-size: 16px; }
+  .set-input { padding: 10px 1px; font-size: 16px !important; }
   .weight-pair { gap: 1px; grid-template-columns: 1fr 8px 1fr; }
   .weight-pair-headers { gap: 1px; grid-template-columns: 1fr 8px 1fr; font-size: 9px; }
   .day-picker-hero-title { font-size: 20px; }
@@ -2342,7 +2338,7 @@ input::placeholder { color: var(--text-4); }
    VERSION
    ──────────────────────────────────────────── */
 
-const APP_VERSION = '1.2.0';
+const APP_VERSION = '1.2.1';
 const APP_BUILD_DATE = '2026-05-05';
 
 /* ────────────────────────────────────────────
@@ -4783,6 +4779,20 @@ function attachSettingsHandlers() {
 /* ────────────────────────────────────────────
    INIT
    ──────────────────────────────────────────── */
+
+// Block pinch-zoom on iOS Safari, which honours neither `user-scalable=no`
+// nor `touch-action` consistently across versions. Belt & braces.
+['gesturestart', 'gesturechange', 'gestureend'].forEach(ev => {
+  document.addEventListener(ev, e => e.preventDefault(), { passive: false });
+});
+
+// Block double-tap zoom by suppressing the second tap if it's within 300ms.
+let lastTouchEnd = 0;
+document.addEventListener('touchend', e => {
+  const now = Date.now();
+  if (now - lastTouchEnd < 320) e.preventDefault();
+  lastTouchEnd = now;
+}, { passive: false });
 
 document.addEventListener('DOMContentLoaded', () => {
   loadState();
