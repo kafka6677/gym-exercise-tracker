@@ -47,6 +47,10 @@ html { color-scheme: dark; }
 
 html, body { height: 100%; }
 
+/* User-controlled UI scale. Applied to .app so the safe-area handling on
+   the topbar/bottom-nav stays in actual viewport pixels. */
+.app { zoom: var(--ui-scale, 1); }
+
 body {
   background: var(--bg);
   background-image:
@@ -1852,6 +1856,72 @@ input::placeholder { color: var(--text-4); }
   font-family: ui-monospace, SFMono-Regular, "SF Mono", Consolas, monospace;
 }
 
+.ui-scale-row {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.ui-scale-row input[type="range"] {
+  flex: 1;
+  height: 32px;
+  background: transparent;
+  appearance: none;
+  -webkit-appearance: none;
+  cursor: pointer;
+}
+
+.ui-scale-row input[type="range"]::-webkit-slider-runnable-track {
+  height: 6px;
+  background: var(--surface-3);
+  border-radius: 999px;
+}
+
+.ui-scale-row input[type="range"]::-moz-range-track {
+  height: 6px;
+  background: var(--surface-3);
+  border-radius: 999px;
+}
+
+.ui-scale-row input[type="range"]::-webkit-slider-thumb {
+  appearance: none;
+  -webkit-appearance: none;
+  width: 22px;
+  height: 22px;
+  border-radius: 50%;
+  background: var(--accent);
+  border: 3px solid var(--bg);
+  box-shadow: 0 2px 8px var(--accent-glow);
+  margin-top: -8px;
+  cursor: grab;
+}
+
+.ui-scale-row input[type="range"]::-moz-range-thumb {
+  width: 22px;
+  height: 22px;
+  border-radius: 50%;
+  background: var(--accent);
+  border: 3px solid var(--bg);
+  box-shadow: 0 2px 8px var(--accent-glow);
+  cursor: grab;
+}
+
+.ui-scale-marks {
+  display: flex;
+  justify-content: space-between;
+  font-size: 10px;
+  color: var(--text-3);
+  font-family: ui-monospace, SFMono-Regular, "SF Mono", Consolas, monospace;
+  padding: 6px 4px 0;
+  letter-spacing: -0.02em;
+}
+
+#ui-scale-value {
+  color: var(--accent);
+  font-weight: 700;
+  font-family: ui-monospace, SFMono-Regular, "SF Mono", Consolas, monospace;
+}
+
 /* ─── Backup section (within settings) ───── */
 
 .backup-section {
@@ -2094,12 +2164,28 @@ input::placeholder { color: var(--text-4); }
 
   /* Toast: mobile uses safe area + above bottom nav */
   .toast { bottom: calc(80px + env(safe-area-inset-bottom)); padding: 11px 16px; font-size: 13px; max-width: calc(100% - 32px); }
+
+  /* iOS Safari auto-zooms when focusing inputs with font-size < 16px,
+     which shifts the layout (the bottom nav appears to "jump"). Pin every
+     editable field to 16px on mobile. */
+  .set-input,
+  .routine-ex-num,
+  .routine-ex-name,
+  .session-date-input,
+  #picker-date,
+  .records-search,
+  .settings-input,
+  .settings-field input,
+  .add-exercise-form input,
+  .routine-day-dow {
+    font-size: 16px;
+  }
 }
 
 @media (max-width: 400px) {
   .sets-header,
   .set { grid-template-columns: 22px 1fr 1.8fr 38px 36px 30px; gap: 3px; padding: 6px 4px; }
-  .set-input { padding: 10px 1px; font-size: 13px; }
+  .set-input { padding: 10px 1px; font-size: 16px; }
   .weight-pair { gap: 1px; grid-template-columns: 1fr 8px 1fr; }
   .weight-pair-headers { gap: 1px; grid-template-columns: 1fr 8px 1fr; font-size: 9px; }
   .day-picker-hero-title { font-size: 20px; }
@@ -2256,7 +2342,7 @@ input::placeholder { color: var(--text-4); }
    VERSION
    ──────────────────────────────────────────── */
 
-const APP_VERSION = '1.1.4';
+const APP_VERSION = '1.2.0';
 const APP_BUILD_DATE = '2026-05-05';
 
 /* ────────────────────────────────────────────
@@ -3131,6 +3217,33 @@ function applyImportedData(parsed, { confirmFirst = false } = {}) {
   ensureValid();
   render();
   return true;
+}
+
+/* ────────────────────────────────────────────
+   DEVICE PREFERENCES (per-device, never synced)
+   ──────────────────────────────────────────── */
+
+const PREFS_KEY = 'gymlog.prefs';
+
+const prefs = {
+  uiScale: 1.0,
+};
+
+function loadPrefs() {
+  try {
+    const raw = localStorage.getItem(PREFS_KEY);
+    if (raw) Object.assign(prefs, JSON.parse(raw));
+  } catch (e) { console.warn('Failed to load prefs:', e); }
+}
+
+function savePrefs() {
+  try { localStorage.setItem(PREFS_KEY, JSON.stringify(prefs)); }
+  catch (e) { console.warn('Failed to save prefs:', e); }
+}
+
+function applyUIScale() {
+  const scale = Number(prefs.uiScale) || 1;
+  document.documentElement.style.setProperty('--ui-scale', String(scale));
 }
 
 /* ────────────────────────────────────────────
@@ -4191,13 +4304,42 @@ function renderSettings() {
       <div class="page-header">
         <div>
           <div class="page-title">Settings</div>
-          <div class="page-subtitle">Backup, sync, and manage your data</div>
+          <div class="page-subtitle">Display, backup, sync, and manage your data</div>
         </div>
       </div>
 
+      ${renderDisplaySection()}
       ${renderBackupSection()}
       ${renderGistSyncSection()}
       ${renderAboutSection()}
+    </div>`;
+}
+
+function renderDisplaySection() {
+  const scale = Number(prefs.uiScale) || 1;
+  const pct = Math.round(scale * 100);
+  return `
+    <div class="settings-section">
+      <div class="settings-section-row">
+        <div>
+          <div class="settings-section-title">Display</div>
+          <div class="settings-section-sub">Personal preference — saved on this device only.</div>
+        </div>
+      </div>
+
+      <div class="settings-field">
+        <label for="ui-scale-slider">
+          UI Scale
+          <span class="settings-field-hint" id="ui-scale-value">${pct}%</span>
+        </label>
+        <div class="ui-scale-row">
+          <button type="button" class="btn btn-sm" data-ui-scale-set="1" title="Reset to 100%">Reset</button>
+          <input type="range" id="ui-scale-slider" min="0.85" max="1.4" step="0.05" value="${scale}" />
+        </div>
+        <div class="ui-scale-marks">
+          <span>85%</span><span>100%</span><span>140%</span>
+        </div>
+      </div>
     </div>`;
 }
 
@@ -4574,6 +4716,29 @@ function attachRoutineHandlers() {
 }
 
 function attachSettingsHandlers() {
+  // UI scale slider
+  const scaleSlider = $('#ui-scale-slider');
+  const scaleValue = $('#ui-scale-value');
+  if (scaleSlider) {
+    scaleSlider.addEventListener('input', e => {
+      const v = Number(e.target.value) || 1;
+      prefs.uiScale = v;
+      applyUIScale();
+      if (scaleValue) scaleValue.textContent = `${Math.round(v * 100)}%`;
+    });
+    scaleSlider.addEventListener('change', () => savePrefs());
+  }
+  $$('[data-ui-scale-set]').forEach(el => {
+    el.addEventListener('click', () => {
+      const v = Number(el.dataset.uiScaleSet) || 1;
+      prefs.uiScale = v;
+      applyUIScale();
+      savePrefs();
+      if (scaleSlider) scaleSlider.value = String(v);
+      if (scaleValue) scaleValue.textContent = `${Math.round(v * 100)}%`;
+    });
+  });
+
   // Backup
   attachBackupHandlers();
 
@@ -4622,6 +4787,8 @@ function attachSettingsHandlers() {
 document.addEventListener('DOMContentLoaded', () => {
   loadState();
   loadSyncConfig();
+  loadPrefs();
+  applyUIScale();
   ensureValid();
 
   $$('.tab, .bottom-nav-btn, .topbar-icon-btn').forEach(el => {
