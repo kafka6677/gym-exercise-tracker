@@ -15,7 +15,7 @@
 <title>GymLog · Workout Tracker</title>
 <style>
 *, *::before, *::after { margin: 0; padding: 0; box-sizing: border-box; }
-html { color-scheme: dark; }
+html { color-scheme: dark; background: var(--bg); }
 
 :root {
   --bg: #08080b;
@@ -1414,18 +1414,18 @@ input::placeholder { color: var(--text-4); }
 
 .bottom-nav {
   display: none;
-  /* iOS PWA mode constrains the layout viewport to exclude the home-indicator
-     safe area, so a plain `bottom: 0` lands ~34px above the actual screen
-     edge. Pushing the nav DOWN by safe-area-inset-bottom puts its bottom
-     edge at the real screen bottom. Padding-bottom is a flat 10px so the
-     buttons sit ~10px above that real bottom edge — not floating up by
-     safe-area + padding any more. */
+  /* iOS PWA's layout viewport ends ~34px above the actual screen bottom
+     (the home-indicator safe-area). We can't render fixed elements below
+     that line — pushing past clips the labels. So instead the nav sits at
+     `bottom: 0` (top of the safe-area), and its background matches the body
+     `--bg` so the safe-area strip below visually blends with the nav and
+     the page — no contrasting "black block". */
   position: fixed;
-  bottom: calc(-1 * env(safe-area-inset-bottom, 0px));
+  bottom: 0;
   left: 0;
   right: 0;
-  background: var(--surface);
-  border-top: 1px solid var(--border);
+  background: var(--bg);
+  border-top: 1px solid var(--border-subtle);
   padding-top: 8px;
   padding-bottom: 10px;
   padding-left: max(4px, env(safe-area-inset-left));
@@ -2413,7 +2413,7 @@ input::placeholder { color: var(--text-4); }
    VERSION
    ──────────────────────────────────────────── */
 
-const APP_VERSION = '1.3.7';
+const APP_VERSION = '1.3.8';
 const APP_BUILD_DATE = '2026-05-05';
 
 /* ────────────────────────────────────────────
