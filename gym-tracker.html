@@ -63,26 +63,20 @@ html, body {
 .app { zoom: var(--ui-scale, 1); }
 
 body {
-  /* On iOS PWA `window.innerHeight` and `100dvh` both report the *layout*
-     viewport, which excludes the home-indicator safe-area zone. `100lvh`
-     (large viewport height, iOS 15.5+) is the only unit that returns the
-     literal screen height including that zone — body filling that means
-     the in-flow bottom nav lands at the *actual* screen bottom. */
+  /* 100dvh = current visible viewport. Body fills that exactly so the
+     in-flow bottom nav lands at the visible bottom. Anything iOS reserves
+     below that (the safe-area home-indicator zone) is filled by the html
+     element, which has a matching pure-black background. */
   position: fixed;
   top: 0;
   left: 0;
   width: 100vw;
   height: 100vh;
   height: 100dvh;
-  height: 100lvh;
   display: flex;
   flex-direction: column;
 
-  background: var(--bg);
-  background-image:
-    radial-gradient(circle at 15% -10%, rgba(16, 185, 129, 0.08), transparent 45%),
-    radial-gradient(circle at 90% 110%, rgba(99, 102, 241, 0.06), transparent 50%);
-  background-attachment: fixed;
+  background: #000;
   color: var(--text);
   font-family: -apple-system, BlinkMacSystemFont, "Inter", "Segoe UI", system-ui, sans-serif;
   font-size: 14px;
@@ -2416,7 +2410,7 @@ input::placeholder { color: var(--text-4); }
    VERSION
    ──────────────────────────────────────────── */
 
-const APP_VERSION = '1.4.0';
+const APP_VERSION = '1.4.1';
 const APP_BUILD_DATE = '2026-05-05';
 
 /* ────────────────────────────────────────────
