@@ -75,6 +75,9 @@ body {
   height: 100vh;
   height: 100dvh;
   height: calc(100dvh + env(safe-area-inset-bottom, 0px));
+  /* JS-set --app-height uses screen.height in portrait — the only reliable
+     full-screen value on iOS PWA. Last declaration wins when supported. */
+  height: var(--app-height, calc(100dvh + env(safe-area-inset-bottom, 0px)));
   display: flex;
   flex-direction: column;
 
@@ -2412,7 +2415,7 @@ input::placeholder { color: var(--text-4); }
    VERSION
    ──────────────────────────────────────────── */
 
-const APP_VERSION = '1.4.2';
+const APP_VERSION = '1.4.3';
 const APP_BUILD_DATE = '2026-05-05';
 
 /* ────────────────────────────────────────────
@@ -4859,14 +4862,22 @@ function attachSettingsHandlers() {
    INIT
    ──────────────────────────────────────────── */
 
-/* iOS PWA: 100vh / 100dvh under-report height in some iOS versions.
-   Pick the largest reliable measurement and pin body height via a CSS var. */
+/* iOS PWA: 100vh / 100dvh / window.innerHeight all report the layout viewport
+   which excludes the home-indicator safe-area zone. screen.height reports the
+   full device-screen height in CSS px and is the only reliable source for
+   "the literal screen edge" in PWA portrait mode. We pick the largest of all
+   measurements so it works in both orientations and on devices without a
+   safe area. */
 function setAppHeight() {
-  const h = Math.max(
+  const isPortrait = (window.matchMedia && window.matchMedia('(orientation: portrait)').matches) ||
+                     (window.innerHeight >= window.innerWidth);
+  const candidates = [
     window.innerHeight || 0,
     document.documentElement.clientHeight || 0,
-    (window.visualViewport && window.visualViewport.height) || 0
-  );
+    (window.visualViewport && window.visualViewport.height) || 0,
+  ];
+  if (isPortrait) candidates.push(screen.height || 0);
+  const h = Math.max.apply(null, candidates);
   document.documentElement.style.setProperty('--app-height', h + 'px');
 }
 setAppHeight();
@@ -4937,13 +4948,9 @@ if ('serviceWorker' in navigator && location.protocol !== 'file:') {
   });
 }
 
-// Block double-tap zoom by suppressing the second tap if it's within 300ms.
-let lastTouchEnd = 0;
-document.addEventListener('touchend', e => {
-  const now = Date.now();
-  if (now - lastTouchEnd < 320) e.preventDefault();
-  lastTouchEnd = now;
-}, { passive: false });
+// (The previous global touchend preventDefault was eating input-focus clicks
+// on iOS — keyboards weren't opening. Pinch + double-tap zoom are still blocked
+// by the viewport meta `user-scalable=no` and the gesturestart handlers above.)
 
 // Stop the iOS rubber-band when dragging past the top/bottom of .page —
 // overscroll-behavior alone is unreliable on Safari. Touch only:
@@ -4956,9 +4963,11 @@ document.addEventListener('touchstart', e => {
 
 document.addEventListener('touchmove', e => {
   if (e.touches.length !== 1) return;
+  // Don't interfere with form-field interaction (selection, keyboard).
+  const t = e.target;
+  if (t && (t.tagName === 'INPUT' || t.tagName === 'TEXTAREA' || t.tagName === 'SELECT' || t.isContentEditable)) return;
   const page = document.getElementById('page');
   if (!page) return;
-  // Touch must originate inside .page (or its descendants) for scroll to apply.
   const inPage = page.contains(e.target);
   if (!inPage) { e.preventDefault(); return; }
   const dy = e.touches[0].clientY - touchStartY;
