@@ -63,6 +63,14 @@ html, body {
 .app { zoom: var(--ui-scale, 1); }
 
 body {
+  /* Flex column with .app on top and .bottom-nav at the bottom in document
+     flow. Avoids position-fixed quirks on iOS PWA where the nav was floating
+     a small amount above the safe-area bottom. */
+  display: flex;
+  flex-direction: column;
+  height: 100vh;
+  height: 100dvh;
+
   background: var(--bg);
   background-image:
     radial-gradient(circle at 15% -10%, rgba(16, 185, 129, 0.08), transparent 45%),
@@ -82,8 +90,8 @@ input::placeholder { color: var(--text-4); }
 /* ─── App shell ──────────────────────────── */
 
 .app {
-  height: 100vh;
-  height: 100dvh; /* tracks browser chrome on iOS */
+  flex: 1;
+  min-height: 0;
   display: grid;
   grid-template-rows: auto 1fr;
 }
@@ -1407,16 +1415,13 @@ input::placeholder { color: var(--text-4); }
 
 .bottom-nav {
   display: none;
-  position: fixed;
-  bottom: 0;
-  left: 0;
-  right: 0;
+  flex-shrink: 0;
   background: rgba(10, 10, 13, 0.94);
   backdrop-filter: blur(20px);
   -webkit-backdrop-filter: blur(20px);
   border-top: 1px solid var(--border-subtle);
   padding-top: 6px;
-  padding-bottom: calc(6px + env(safe-area-inset-bottom));
+  padding-bottom: max(8px, env(safe-area-inset-bottom));
   padding-left: max(4px, env(safe-area-inset-left));
   padding-right: max(4px, env(safe-area-inset-right));
   z-index: 50;
@@ -2087,7 +2092,7 @@ input::placeholder { color: var(--text-4); }
 /* ─── Mobile (≤860px) ────────────────────── */
 
 @media (max-width: 860px) {
-  .app { grid-template-rows: auto 1fr; height: 100vh; height: 100dvh; }
+  .app { grid-template-rows: auto 1fr; }
   .topbar {
     padding-top: env(safe-area-inset-top);
     padding-left: max(14px, env(safe-area-inset-left));
@@ -2103,7 +2108,7 @@ input::placeholder { color: var(--text-4); }
   .topbar-stats { display: none; }
   .bottom-nav { display: flex; }
   .page {
-    padding: 16px max(14px, env(safe-area-inset-left)) calc(80px + env(safe-area-inset-bottom)) max(14px, env(safe-area-inset-right));
+    padding: 16px max(14px, env(safe-area-inset-left)) 24px max(14px, env(safe-area-inset-right));
   }
   .page-title { font-size: 22px; }
   .page-subtitle { font-size: 13px; }
@@ -2229,7 +2234,7 @@ input::placeholder { color: var(--text-4); }
   .settings-actions .btn { min-width: 0; }
 
   /* Toast: mobile uses safe area + above bottom nav */
-  .toast { bottom: calc(80px + env(safe-area-inset-bottom)); padding: 11px 16px; font-size: 13px; max-width: calc(100% - 32px); }
+  .toast { bottom: calc(88px + env(safe-area-inset-bottom)); padding: 11px 16px; font-size: 13px; max-width: calc(100% - 32px); }
 
   /* iOS Safari auto-zooms when focusing any form field with font-size < 16px,
      which shifts the layout (the bottom nav appears to "jump"). Force every
@@ -2402,7 +2407,7 @@ input::placeholder { color: var(--text-4); }
    VERSION
    ──────────────────────────────────────────── */
 
-const APP_VERSION = '1.3.1';
+const APP_VERSION = '1.3.2';
 const APP_BUILD_DATE = '2026-05-05';
 
 /* ────────────────────────────────────────────
@@ -3425,11 +3430,14 @@ async function findOrCreateGist() {
   return data.id;
 }
 
-async function pushToGist() {
+async function pushToGist({ silent = false } = {}) {
   if (syncing) return;
-  if (!syncConfig.token) { alert('Add a GitHub token first.'); return; }
+  if (!syncConfig.token) {
+    if (!silent) alert('Add a GitHub token first.');
+    return;
+  }
   syncing = true;
-  setSyncStatus('Syncing…', 'busy');
+  if (!silent) setSyncStatus('Syncing…', 'busy');
   try {
     const id = await findOrCreateGist();
     const content = JSON.stringify(buildExportPayload(), null, 2);
@@ -3440,16 +3448,20 @@ async function pushToGist() {
     });
     syncConfig.lastSyncedAt = new Date().toISOString();
     saveSyncConfig();
-    setSyncStatus('Synced', 'ok');
+    if (!silent) {
+      setSyncStatus('Synced', 'ok');
+      showInfoToast('Pushed to Gist');
+    }
     setSyncLast();
-    showInfoToast('Pushed to Gist');
     // Keep status fresh in the field
     const idInput = $('#sync-gist-id');
     if (idInput && !idInput.value) idInput.value = syncConfig.gistId;
   } catch (e) {
     console.error(e);
-    setSyncStatus('Failed', 'err');
-    showInfoToast('Sync failed: ' + e.message);
+    if (!silent) {
+      setSyncStatus('Failed', 'err');
+      showInfoToast('Sync failed: ' + e.message);
+    }
   } finally {
     syncing = false;
   }
@@ -3495,7 +3507,7 @@ function scheduleAutoSync() {
   if (!syncConfig.autoSync || !syncConfig.token) return;
   if (autoSyncTimer) clearTimeout(autoSyncTimer);
   autoSyncTimer = setTimeout(() => {
-    pushToGist().catch(e => console.warn('Auto-sync failed:', e));
+    pushToGist({ silent: true }).catch(e => console.warn('Auto-sync failed:', e));
   }, 2500);
 }
 
