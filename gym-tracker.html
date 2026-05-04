@@ -427,6 +427,52 @@ input::placeholder { color: var(--text-4); }
   white-space: nowrap;
 }
 
+.draft-banner {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  background: var(--indigo-dim);
+  border: 1px solid rgba(99, 102, 241, 0.25);
+  color: var(--text);
+  border-radius: var(--radius-sm);
+  padding: 10px 14px;
+  font-size: 12px;
+  margin-bottom: 16px;
+  line-height: 1.4;
+}
+.draft-banner svg { color: var(--indigo); flex-shrink: 0; }
+.draft-banner strong { color: var(--indigo); font-weight: 700; }
+
+.draft-save-bar {
+  margin-top: 20px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 12px;
+}
+
+.draft-save-bar .btn-xl {
+  width: 100%;
+  max-width: 360px;
+  font-size: 15px;
+  min-height: 52px;
+  box-shadow: 0 6px 20px var(--accent-glow);
+}
+
+.btn-link-danger {
+  background: transparent;
+  border: none;
+  color: var(--text-3);
+  font-size: 12px;
+  font-weight: 600;
+  padding: 6px 12px;
+  border-radius: 6px;
+  text-decoration: underline;
+  text-underline-offset: 2px;
+  text-decoration-color: var(--text-4);
+}
+.btn-link-danger:hover { color: var(--danger); text-decoration-color: var(--danger); }
+
 .session-summary {
   display: grid;
   grid-template-columns: repeat(4, 1fr);
@@ -588,7 +634,7 @@ input::placeholder { color: var(--text-4); }
 
 .sets-header {
   display: grid;
-  grid-template-columns: 44px 1fr 1fr 110px 36px 32px;
+  grid-template-columns: 40px 1fr 1.7fr 70px 36px 32px;
   gap: 8px;
   padding: 0 12px 8px;
   font-size: 10px;
@@ -599,18 +645,39 @@ input::placeholder { color: var(--text-4); }
 }
 
 .sets-header > div:nth-child(2),
-.sets-header > div:nth-child(3),
 .sets-header > div:nth-child(4) { text-align: center; }
+
+.weight-pair-headers {
+  display: grid;
+  grid-template-columns: 1fr 14px 1fr;
+  gap: 4px;
+}
+.weight-pair-headers > div { text-align: center; }
 
 .set {
   display: grid;
-  grid-template-columns: 44px 1fr 1fr 110px 36px 32px;
+  grid-template-columns: 40px 1fr 1.7fr 70px 36px 32px;
   gap: 8px;
   align-items: center;
   padding: 6px 12px;
   border-radius: var(--radius-sm);
   transition: background 0.15s ease;
   margin-bottom: 2px;
+}
+
+.weight-pair {
+  display: grid;
+  grid-template-columns: 1fr 14px 1fr;
+  gap: 4px;
+  align-items: center;
+}
+
+.weight-pair-plus {
+  text-align: center;
+  font-size: 13px;
+  color: var(--text-3);
+  font-weight: 700;
+  line-height: 1;
 }
 
 .set:hover { background: var(--surface-2); }
@@ -960,6 +1027,22 @@ input::placeholder { color: var(--text-4); }
 
 .record-stat-value .unit { font-size: 11px; font-weight: 500; color: var(--text-3); margin-left: 1px; }
 
+.record-stat-breakdown {
+  font-size: 10px;
+  color: var(--text-3);
+  font-weight: 500;
+  margin-top: 3px;
+  font-family: ui-monospace, SFMono-Regular, "SF Mono", Consolas, monospace;
+  letter-spacing: -0.02em;
+  text-align: right;
+}
+
+.record-plus {
+  font-weight: 500;
+  opacity: 0.6;
+  margin: 0 1px;
+}
+
 .record-date { font-size: 11px; color: var(--text-3); font-weight: 500; }
 
 /* ─── Routine ────────────────────────────── */
@@ -1013,8 +1096,8 @@ input::placeholder { color: var(--text-4); }
 
 .routine-ex-headers {
   display: grid;
-  grid-template-columns: 1fr 70px 70px 90px 32px;
-  gap: 8px;
+  grid-template-columns: 1fr 56px 56px 70px 70px 32px;
+  gap: 6px;
   padding: 6px 8px 4px;
   font-size: 10px;
   color: var(--text-3);
@@ -1025,12 +1108,13 @@ input::placeholder { color: var(--text-4); }
 
 .routine-ex-headers > div:nth-child(2),
 .routine-ex-headers > div:nth-child(3),
-.routine-ex-headers > div:nth-child(4) { text-align: center; }
+.routine-ex-headers > div:nth-child(4),
+.routine-ex-headers > div:nth-child(5) { text-align: center; }
 
 .routine-ex {
   display: grid;
-  grid-template-columns: 1fr 70px 70px 90px 32px;
-  gap: 8px;
+  grid-template-columns: 1fr 56px 56px 70px 70px 32px;
+  gap: 6px;
   align-items: center;
   padding: 5px 8px;
   border-radius: var(--radius-xs);
@@ -1516,7 +1600,252 @@ input::placeholder { color: var(--text-4); }
   padding: 14px 0;
 }
 
-/* ─── Backup / sync section ──────────────── */
+/* ─── Topbar settings button ─────────────── */
+
+.topbar-icon-btn {
+  width: 40px;
+  height: 40px;
+  border: 1px solid var(--border);
+  background: var(--surface);
+  border-radius: 10px;
+  color: var(--text-2);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+  padding: 0;
+  margin-left: auto; /* push to right when other topbar items are hidden */
+  transition: all 0.15s ease;
+}
+
+.topbar-icon-btn svg { width: 18px; height: 18px; }
+.topbar-icon-btn:hover { background: var(--surface-2); color: var(--text); }
+.topbar-icon-btn.active {
+  background: var(--accent-dim);
+  border-color: rgba(16, 185, 129, 0.4);
+  color: var(--accent);
+}
+
+/* ─── Settings page ──────────────────────── */
+
+.settings-wrap { max-width: 720px; margin: 0 auto; }
+
+.settings-section {
+  background: var(--surface);
+  border: 1px solid var(--border-subtle);
+  border-radius: var(--radius);
+  padding: 18px;
+  margin-bottom: 14px;
+}
+
+.settings-section-row {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  gap: 10px;
+  margin-bottom: 14px;
+}
+
+.settings-section-title {
+  font-size: 14px;
+  font-weight: 700;
+  letter-spacing: -0.005em;
+}
+
+.settings-section-sub {
+  font-size: 12px;
+  color: var(--text-3);
+  margin-top: 2px;
+}
+
+.settings-section-status {
+  font-size: 10px;
+  font-weight: 700;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  padding: 4px 10px;
+  border-radius: 999px;
+  background: var(--surface-2);
+  color: var(--text-3);
+  white-space: nowrap;
+  flex-shrink: 0;
+}
+
+.settings-section-status.ok { background: var(--accent-dim); color: var(--accent); }
+.settings-section-status.err { background: var(--danger-dim); color: var(--danger); }
+.settings-section-status.busy { background: var(--indigo-dim); color: var(--indigo); }
+
+.settings-help {
+  font-size: 12px;
+  color: var(--text-3);
+  background: var(--surface-2);
+  border: 1px solid var(--border-subtle);
+  border-radius: var(--radius-sm);
+  padding: 10px 14px;
+  margin-bottom: 14px;
+  line-height: 1.55;
+}
+
+.settings-help summary {
+  cursor: pointer;
+  font-weight: 600;
+  color: var(--text-2);
+  padding: 2px 0;
+  list-style: none;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.settings-help summary::before {
+  content: '›';
+  display: inline-block;
+  transition: transform 0.15s ease;
+  font-size: 14px;
+  color: var(--text-3);
+}
+
+.settings-help[open] summary::before { transform: rotate(90deg); }
+
+.settings-help ol { padding-left: 18px; margin-top: 8px; }
+.settings-help li { margin-bottom: 4px; }
+.settings-help a { color: var(--accent); text-decoration: none; }
+.settings-help a:hover { text-decoration: underline; }
+.settings-help code {
+  background: var(--bg);
+  padding: 1px 6px;
+  border-radius: 4px;
+  font-size: 11px;
+  font-family: ui-monospace, SFMono-Regular, "SF Mono", Consolas, monospace;
+  color: var(--text-2);
+}
+
+.settings-field { margin-bottom: 12px; }
+
+.settings-field label {
+  display: block;
+  font-size: 11px;
+  color: var(--text-2);
+  font-weight: 600;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+  margin-bottom: 6px;
+}
+
+.settings-field-hint {
+  text-transform: none;
+  letter-spacing: 0;
+  color: var(--text-3);
+  font-weight: 500;
+  font-size: 11px;
+}
+
+.settings-input-row { display: flex; gap: 6px; }
+.settings-input-row .icon-btn { flex-shrink: 0; }
+
+.settings-input,
+.settings-field input[type="text"],
+.settings-field input[type="password"] {
+  width: 100%;
+  background: var(--surface-2);
+  border: 1px solid var(--border-subtle);
+  border-radius: var(--radius-sm);
+  padding: 11px 14px;
+  color: var(--text);
+  font-size: 14px;
+  font-family: ui-monospace, SFMono-Regular, "SF Mono", Consolas, monospace;
+  min-height: 44px;
+}
+
+.settings-input:focus,
+.settings-field input:focus { outline: none; border-color: var(--accent); }
+
+.settings-actions {
+  display: flex;
+  gap: 8px;
+  margin-bottom: 14px;
+  flex-wrap: wrap;
+}
+
+.settings-actions .btn { flex: 1; min-width: 140px; min-height: 44px; }
+
+.settings-toggle {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 10px 12px;
+  background: var(--surface-2);
+  border-radius: var(--radius-sm);
+  cursor: pointer;
+  margin-bottom: 10px;
+  user-select: none;
+  min-height: 44px;
+}
+
+.settings-toggle:hover { background: var(--surface-3); }
+
+.settings-toggle input[type="checkbox"] {
+  appearance: none;
+  -webkit-appearance: none;
+  width: 38px;
+  height: 22px;
+  background: var(--surface-3);
+  border-radius: 999px;
+  position: relative;
+  cursor: pointer;
+  transition: background 0.18s ease;
+  flex-shrink: 0;
+}
+
+.settings-toggle input[type="checkbox"]::after {
+  content: '';
+  position: absolute;
+  top: 2px;
+  left: 2px;
+  width: 18px;
+  height: 18px;
+  border-radius: 50%;
+  background: var(--text-2);
+  transition: all 0.18s ease;
+}
+
+.settings-toggle input[type="checkbox"]:checked { background: var(--accent); }
+.settings-toggle input[type="checkbox"]:checked::after {
+  left: 18px;
+  background: var(--accent-text);
+}
+
+.settings-toggle-label { font-size: 13px; font-weight: 600; flex: 1; }
+.settings-toggle-sub { font-size: 11px; color: var(--text-3); margin-top: 2px; font-weight: 400; }
+
+.settings-status-line {
+  font-size: 12px;
+  color: var(--text-3);
+  padding: 6px 4px 0;
+}
+
+.settings-version { text-align: right; flex-shrink: 0; }
+
+.settings-version-tag {
+  display: inline-block;
+  font-family: ui-monospace, SFMono-Regular, "SF Mono", Consolas, monospace;
+  font-size: 13px;
+  font-weight: 700;
+  color: var(--accent);
+  background: var(--accent-dim);
+  padding: 4px 10px;
+  border-radius: 999px;
+  letter-spacing: -0.01em;
+}
+
+.settings-version-date {
+  font-size: 11px;
+  color: var(--text-3);
+  margin-top: 4px;
+  font-family: ui-monospace, SFMono-Regular, "SF Mono", Consolas, monospace;
+}
+
+/* ─── Backup section (within settings) ───── */
 
 .backup-section {
   background: var(--surface);
@@ -1536,7 +1865,7 @@ input::placeholder { color: var(--text-4); }
 }
 
 .backup-buttons { display: flex; gap: 8px; margin-bottom: 10px; flex-wrap: wrap; }
-.backup-buttons .btn { flex: 1; min-width: 140px; }
+.backup-buttons .btn { flex: 1; min-width: 140px; min-height: 44px; }
 
 .backup-hint {
   font-size: 12px;
@@ -1668,12 +1997,15 @@ input::placeholder { color: var(--text-4); }
 
   /* Sets: keep horizontal but bigger touch targets */
   .sets-header,
-  .set { grid-template-columns: 30px 1fr 1fr 50px 40px 36px; gap: 6px; padding: 6px 8px; }
-  .set-input { padding: 11px 4px; font-size: 14px; min-height: 44px; }
-  .set-volume { font-size: 12px; padding: 0 2px; }
+  .set { grid-template-columns: 26px 1fr 1.8fr 44px 40px 32px; gap: 4px; padding: 6px 6px; }
+  .set-input { padding: 11px 2px; font-size: 14px; min-height: 44px; }
+  .weight-pair { gap: 2px; grid-template-columns: 1fr 10px 1fr; }
+  .weight-pair-headers { gap: 2px; grid-template-columns: 1fr 10px 1fr; }
+  .weight-pair-plus { font-size: 11px; }
+  .set-volume { font-size: 11px; padding: 0; }
   .check-btn { width: 40px; height: 40px; }
   .check-btn svg { width: 16px; height: 16px; }
-  .set .icon-btn { width: 36px; height: 36px; }
+  .set .icon-btn { width: 32px; height: 32px; }
   .set .icon-btn svg { width: 14px; height: 14px; }
 
   .exercise { padding: 16px 14px; }
@@ -1696,29 +2028,42 @@ input::placeholder { color: var(--text-4); }
   .record-row { grid-template-columns: 1fr auto auto; padding: 12px 14px; gap: 10px; min-height: 60px; }
   .record-row > .record-date { display: none; }
 
-  /* Routine */
-  .routine-day-header { padding: 14px 16px; flex-wrap: wrap; gap: 8px; }
+  /* Routine — same single-row structure as desktop, just narrower columns. */
+  .routine-day-header { padding: 12px 14px; flex-wrap: wrap; gap: 8px; }
   .routine-day-name { font-size: 16px; }
   .routine-day-meta { display: none; }
-  .routine-exercises { padding: 6px 10px 10px; }
-  .routine-ex-headers { display: none; }
-  .routine-ex {
-    display: grid;
-    grid-template-columns: 1fr 1fr 1fr 36px;
-    grid-template-rows: auto auto;
-    gap: 6px 6px;
-    padding: 10px;
-    background: var(--surface-2);
-    border-radius: 8px;
-    margin-bottom: 6px;
+  .routine-exercises { padding: 4px 6px 8px; }
+
+  .routine-ex-headers {
+    grid-template-columns: 1fr 38px 38px 50px 50px 28px;
+    gap: 4px;
+    padding: 4px 6px 4px;
+    font-size: 9px;
   }
-  .routine-ex .routine-ex-name { grid-column: 1 / 4; grid-row: 1; min-height: 40px; }
-  .routine-ex > .icon-btn { grid-column: 4; grid-row: 1; align-self: stretch; height: 40px; }
-  .routine-ex .routine-ex-num { grid-row: 2; min-height: 40px; padding: 8px 6px; }
-  .routine-ex .routine-ex-num:nth-child(2) { grid-column: 1; }
-  .routine-ex .routine-ex-num:nth-child(3) { grid-column: 2; }
-  .routine-ex .routine-ex-num:nth-child(4) { grid-column: 3; }
-  .routine-add-ex-btn { min-height: 44px; }
+
+  .routine-ex {
+    grid-template-columns: 1fr 38px 38px 50px 50px 28px;
+    grid-template-rows: auto;
+    gap: 4px;
+    padding: 4px 6px;
+    background: transparent;
+    border-radius: var(--radius-xs);
+    margin-bottom: 2px;
+    align-items: center;
+  }
+  .routine-ex .routine-ex-name {
+    font-size: 13px; padding: 8px 8px; min-height: 40px;
+    grid-column: auto; grid-row: auto;
+  }
+  .routine-ex > .icon-btn {
+    width: 28px; height: 32px;
+    grid-column: auto; grid-row: auto; align-self: center;
+  }
+  .routine-ex .routine-ex-num {
+    grid-row: auto; grid-column: auto;
+    min-height: 40px; padding: 8px 2px; font-size: 13px; text-align: center;
+  }
+  .routine-add-ex-btn { min-height: 44px; margin-top: 6px; }
 
   /* Empty state */
   .empty-state { padding: 48px 16px; min-height: 40vh; }
@@ -1726,14 +2071,21 @@ input::placeholder { color: var(--text-4); }
   .empty-text { font-size: 16px; }
   .empty-sub { font-size: 13px; }
 
+  /* Settings on mobile */
+  .settings-section { padding: 14px; }
+  .settings-actions { gap: 6px; }
+  .settings-actions .btn { min-width: 0; }
+
   /* Toast: mobile uses safe area + above bottom nav */
   .toast { bottom: calc(80px + env(safe-area-inset-bottom)); padding: 11px 16px; font-size: 13px; max-width: calc(100% - 32px); }
 }
 
 @media (max-width: 400px) {
   .sets-header,
-  .set { grid-template-columns: 26px 1fr 1fr 42px 36px 32px; gap: 4px; padding: 6px 4px; }
-  .set-input { padding: 10px 2px; font-size: 13px; }
+  .set { grid-template-columns: 22px 1fr 1.8fr 38px 36px 30px; gap: 3px; padding: 6px 4px; }
+  .set-input { padding: 10px 1px; font-size: 13px; }
+  .weight-pair { gap: 1px; grid-template-columns: 1fr 8px 1fr; }
+  .weight-pair-headers { gap: 1px; grid-template-columns: 1fr 8px 1fr; font-size: 9px; }
   .day-picker-hero-title { font-size: 20px; }
   .dash-stat-value { font-size: 19px; }
   .dash-stat-label { font-size: 8px; }
@@ -1801,6 +2153,26 @@ input::placeholder { color: var(--text-4); }
       <line x1="3" y1="10" x2="21" y2="10"/>
     </symbol>
     <symbol id="icon-zap" viewBox="0 0 24 24" fill="currentColor"><polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"/></symbol>
+    <symbol id="icon-settings" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+      <circle cx="12" cy="12" r="3"/>
+      <path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1 0 2.83 2 2 0 0 1-2.83 0l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-2 2 2 2 0 0 1-2-2v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83 0 2 2 0 0 1 0-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1-2-2 2 2 0 0 1 2-2h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 0-2.83 2 2 0 0 1 2.83 0l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 2-2 2 2 0 0 1 2 2v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 0 2 2 0 0 1 0 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 2 2 2 2 0 0 1-2 2h-.09a1.65 1.65 0 0 0-1.51 1z"/>
+    </symbol>
+    <symbol id="icon-eye" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+      <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/>
+      <circle cx="12" cy="12" r="3"/>
+    </symbol>
+    <symbol id="icon-eye-off" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+      <path d="M17.94 17.94A10.07 10.07 0 0 1 12 20c-7 0-11-8-11-8a18.45 18.45 0 0 1 5.06-5.94M9.9 4.24A9.12 9.12 0 0 1 12 4c7 0 11 8 11 8a18.5 18.5 0 0 1-2.16 3.19m-6.72-1.07a3 3 0 1 1-4.24-4.24"/>
+      <line x1="1" y1="1" x2="23" y2="23"/>
+    </symbol>
+    <symbol id="icon-cloud-up" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+      <polyline points="16 16 12 12 8 16"/><line x1="12" y1="12" x2="12" y2="21"/>
+      <path d="M20.39 18.39A5 5 0 0 0 18 9h-1.26A8 8 0 1 0 3 16.3"/>
+    </symbol>
+    <symbol id="icon-cloud-down" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+      <polyline points="8 17 12 21 16 17"/><line x1="12" y1="12" x2="12" y2="21"/>
+      <path d="M20.88 18.09A5 5 0 0 0 18 9h-1.26A8 8 0 1 0 3 16.29"/>
+    </symbol>
   </defs>
 </svg>
 
@@ -1831,6 +2203,10 @@ input::placeholder { color: var(--text-4); }
         <div class="stat-value" id="stat-volume">0</div>
       </div>
     </div>
+
+    <button class="topbar-icon-btn" data-view="settings" title="Settings" aria-label="Settings">
+      <svg viewBox="0 0 24 24"><use href="#icon-settings"/></svg>
+    </button>
   </header>
 
   <main class="page" id="page"></main>
@@ -1861,6 +2237,13 @@ input::placeholder { color: var(--text-4); }
 'use strict';
 
 /* ────────────────────────────────────────────
+   VERSION
+   ──────────────────────────────────────────── */
+
+const APP_VERSION = '1.1.3';
+const APP_BUILD_DATE = '2026-05-05';
+
+/* ────────────────────────────────────────────
    STATE + PERSISTENCE
    ──────────────────────────────────────────── */
 
@@ -1870,6 +2253,7 @@ const state = {
   split: { days: [] },
   sessions: [],
   activeId: null,
+  draft: null,         // unsaved in-progress session (not on calendar / in history)
   view: 'home',
   historySub: 'sessions',
 };
@@ -1885,25 +2269,25 @@ function defaultSplit() {
     days: [
       {
         id: uid(), name: 'Push Day', dayOfWeek: 1, exercises: [
-          { id: uid(), name: 'Bench Press',     defaultSets: 4, defaultReps: 8,  defaultWeight: 60 },
-          { id: uid(), name: 'Overhead Press',  defaultSets: 3, defaultReps: 8,  defaultWeight: 40 },
-          { id: uid(), name: 'Tricep Pushdown', defaultSets: 3, defaultReps: 12, defaultWeight: 25 },
+          { id: uid(), name: 'Bench Press',     defaultSets: 4, defaultReps: 8,  defaultMachineWeight: 60, defaultPlateWeight: 0 },
+          { id: uid(), name: 'Overhead Press',  defaultSets: 3, defaultReps: 8,  defaultMachineWeight: 40, defaultPlateWeight: 0 },
+          { id: uid(), name: 'Tricep Pushdown', defaultSets: 3, defaultReps: 12, defaultMachineWeight: 25, defaultPlateWeight: 0 },
         ],
       },
       {
         id: uid(), name: 'Pull Day', dayOfWeek: 3, exercises: [
-          { id: uid(), name: 'Deadlift',     defaultSets: 3, defaultReps: 5,  defaultWeight: 100 },
-          { id: uid(), name: 'Pull-Ups',     defaultSets: 3, defaultReps: 8,  defaultWeight: 0 },
-          { id: uid(), name: 'Barbell Row',  defaultSets: 3, defaultReps: 10, defaultWeight: 50 },
-          { id: uid(), name: 'Bicep Curl',   defaultSets: 3, defaultReps: 12, defaultWeight: 12 },
+          { id: uid(), name: 'Deadlift',     defaultSets: 3, defaultReps: 5,  defaultMachineWeight: 100, defaultPlateWeight: 0 },
+          { id: uid(), name: 'Pull-Ups',     defaultSets: 3, defaultReps: 8,  defaultMachineWeight: 0,   defaultPlateWeight: 0 },
+          { id: uid(), name: 'Barbell Row',  defaultSets: 3, defaultReps: 10, defaultMachineWeight: 50,  defaultPlateWeight: 0 },
+          { id: uid(), name: 'Bicep Curl',   defaultSets: 3, defaultReps: 12, defaultMachineWeight: 12,  defaultPlateWeight: 0 },
         ],
       },
       {
         id: uid(), name: 'Leg Day', dayOfWeek: 5, exercises: [
-          { id: uid(), name: 'Squat',             defaultSets: 4, defaultReps: 8,  defaultWeight: 80 },
-          { id: uid(), name: 'Romanian Deadlift', defaultSets: 3, defaultReps: 10, defaultWeight: 60 },
-          { id: uid(), name: 'Leg Press',         defaultSets: 3, defaultReps: 12, defaultWeight: 100 },
-          { id: uid(), name: 'Calf Raise',        defaultSets: 4, defaultReps: 15, defaultWeight: 40 },
+          { id: uid(), name: 'Squat',             defaultSets: 4, defaultReps: 8,  defaultMachineWeight: 80,  defaultPlateWeight: 0 },
+          { id: uid(), name: 'Romanian Deadlift', defaultSets: 3, defaultReps: 10, defaultMachineWeight: 60,  defaultPlateWeight: 0 },
+          { id: uid(), name: 'Leg Press',         defaultSets: 3, defaultReps: 12, defaultMachineWeight: 100, defaultPlateWeight: 0 },
+          { id: uid(), name: 'Calf Raise',        defaultSets: 4, defaultReps: 15, defaultMachineWeight: 40,  defaultPlateWeight: 0 },
         ],
       },
     ],
@@ -1918,6 +2302,7 @@ function loadState() {
     if (data?.split?.days && Array.isArray(data.split.days)) state.split = data.split;
     if (Array.isArray(data?.sessions)) state.sessions = data.sessions;
     if (data?.activeId) state.activeId = data.activeId;
+    if (data?.draft && data.draft.id) state.draft = data.draft;
     if (data?.view) state.view = data.view;
     if (data?.historySub) state.historySub = data.historySub;
   } catch (e) {
@@ -1925,15 +2310,17 @@ function loadState() {
   }
 }
 
-function saveState() {
+function saveState(opts = {}) {
   try {
     localStorage.setItem(STORAGE_KEY, JSON.stringify({
       split: state.split,
       sessions: state.sessions,
       activeId: state.activeId,
+      draft: state.draft,
       view: state.view,
       historySub: state.historySub,
     }));
+    if (!opts.skipAutoSync) scheduleAutoSync();
   } catch (e) {
     console.warn('Failed to save state:', e);
   }
@@ -1941,15 +2328,39 @@ function saveState() {
 
 function ensureValid() {
   if (!state.split.days?.length) state.split = defaultSplit();
-  // dayOfWeek may be missing on older split data — normalise to null
   for (const d of state.split.days) {
     if (d.dayOfWeek == null) d.dayOfWeek = null;
   }
   if (state.activeId && !getSession(state.activeId)) state.activeId = null;
-  // Records was its own tab in earlier versions — fold it into history.
   if (state.view === 'records') { state.view = 'history'; state.historySub = 'records'; }
-  if (!['home', 'train', 'history', 'routine'].includes(state.view)) state.view = 'home';
+  if (!['home', 'train', 'history', 'routine', 'settings'].includes(state.view)) state.view = 'home';
   if (!['sessions', 'records'].includes(state.historySub)) state.historySub = 'sessions';
+
+  // Migrate set.weight → set.machineWeight + set.plateWeight
+  const migrateSets = (sess) => {
+    for (const ex of sess.exercises || []) {
+      for (const set of ex.sets || []) {
+        if (set.machineWeight == null && set.plateWeight == null && 'weight' in set) {
+          set.machineWeight = set.weight;
+          set.plateWeight = '';
+          delete set.weight;
+        }
+      }
+    }
+  };
+  state.sessions.forEach(migrateSets);
+  if (state.draft) migrateSets(state.draft);
+
+  // Migrate split exercise defaultWeight → defaultMachineWeight + defaultPlateWeight
+  for (const day of state.split.days) {
+    for (const ex of day.exercises) {
+      if (ex.defaultMachineWeight == null) {
+        ex.defaultMachineWeight = 'defaultWeight' in ex ? ex.defaultWeight : '';
+        ex.defaultPlateWeight = 0;
+        delete ex.defaultWeight;
+      }
+    }
+  }
 }
 
 /* ────────────────────────────────────────────
@@ -2030,8 +2441,12 @@ function formatWeight(w) {
   return n % 1 === 0 ? String(n) : n.toFixed(1);
 }
 
+function setWeight(set) {
+  return (Number(set.machineWeight) || 0) + (Number(set.plateWeight) || 0);
+}
+
 function exerciseVolume(ex) {
-  return ex.sets.reduce((s, set) => s + (Number(set.reps) || 0) * (Number(set.weight) || 0), 0);
+  return ex.sets.reduce((s, set) => s + (Number(set.reps) || 0) * setWeight(set), 0);
 }
 
 function sessionVolume(sess) {
@@ -2066,6 +2481,17 @@ function sortSessions() {
 
 function getSession(id) { return state.sessions.find(s => s.id === id); }
 function getDay(id) { return state.split.days.find(d => d.id === id); }
+
+// Returns the session being edited in the Train tab — either the unsaved
+// draft (if its id matches) or a saved session.
+function getEditingSession(id) {
+  if (state.draft && state.draft.id === id) return state.draft;
+  return state.sessions.find(s => s.id === id);
+}
+
+function isDraftId(id) {
+  return !!(state.draft && state.draft.id === id);
+}
 
 function normalizeName(name) { return String(name || '').trim().toLowerCase(); }
 
@@ -2166,11 +2592,18 @@ function bestSetForExercise(name) {
       if (normalizeName(ex.name) !== norm) continue;
       for (const set of ex.sets) {
         if (!set.complete) continue;
-        const w = Number(set.weight) || 0;
+        const w = setWeight(set);
         const r = Number(set.reps) || 0;
         if (!w || !r) continue;
         if (!best || w > best.weight || (w === best.weight && r > best.reps)) {
-          best = { weight: w, reps: r, date: session.date, sessionId: session.id };
+          best = {
+            weight: w,
+            reps: r,
+            date: session.date,
+            sessionId: session.id,
+            machineWeight: Number(set.machineWeight) || 0,
+            plateWeight: Number(set.plateWeight) || 0,
+          };
         }
       }
     }
@@ -2188,12 +2621,20 @@ function bestE1RMForExercise(name) {
       if (normalizeName(ex.name) !== norm) continue;
       for (const set of ex.sets) {
         if (!set.complete) continue;
-        const w = Number(set.weight) || 0;
+        const w = setWeight(set);
         const r = Number(set.reps) || 0;
         if (!w || !r) continue;
         const e = w * (1 + r / 30);
         if (!best || e > best.e1rm) {
-          best = { e1rm: e, weight: w, reps: r, date: session.date, sessionId: session.id };
+          best = {
+            e1rm: e,
+            weight: w,
+            reps: r,
+            date: session.date,
+            sessionId: session.id,
+            machineWeight: Number(set.machineWeight) || 0,
+            plateWeight: Number(set.plateWeight) || 0,
+          };
         }
       }
     }
@@ -2213,7 +2654,7 @@ function priorBestSet(session, exerciseName) {
       if (normalizeName(ex.name) !== norm) continue;
       for (const set of ex.sets) {
         if (!set.complete) continue;
-        const w = Number(set.weight) || 0;
+        const w = setWeight(set);
         const r = Number(set.reps) || 0;
         if (!w || !r) continue;
         if (!best || w > best.weight || (w === best.weight && r > best.reps)) {
@@ -2230,7 +2671,7 @@ function sessionBestSetForEx(ex) {
   let best = null;
   for (const set of ex.sets) {
     if (!set.complete) continue;
-    const w = Number(set.weight) || 0;
+    const w = setWeight(set);
     const r = Number(set.reps) || 0;
     if (!w || !r) continue;
     if (!best || w > best.weight || (w === best.weight && r > best.reps)) {
@@ -2328,7 +2769,8 @@ function addSplitExercise(dayId) {
     name: '',
     defaultSets: last?.defaultSets || 3,
     defaultReps: last?.defaultReps || 10,
-    defaultWeight: last?.defaultWeight || 0,
+    defaultMachineWeight: last?.defaultMachineWeight || 0,
+    defaultPlateWeight: last?.defaultPlateWeight || 0,
   };
   day.exercises.push(newEx);
   saveState();
@@ -2357,10 +2799,13 @@ function deleteSplitExercise(dayId, exId) {
    MUTATIONS — SESSIONS
    ──────────────────────────────────────────── */
 
+// Pre-fill the Train tab with the day's exercises as a DRAFT.
+// Nothing is written to history or the calendar until saveDraft() is called.
 function startSession(dayId, date) {
+  // (drafts are discarded silently when starting a new session — undo via toast if needed)
   const day = getDay(dayId);
   if (!day) return;
-  const session = {
+  state.draft = {
     id: uid(),
     date: date || todayISO(),
     dayId: day.id,
@@ -2369,19 +2814,18 @@ function startSession(dayId, date) {
     exercises: day.exercises.map(ex => ({
       id: uid(),
       name: ex.name,
-      sets: createDefaultSets(ex.defaultSets, ex.defaultReps, ex.defaultWeight),
+      sets: createDefaultSets(ex.defaultSets, ex.defaultReps, ex.defaultMachineWeight, ex.defaultPlateWeight),
     })),
   };
-  state.sessions.push(session);
-  state.activeId = session.id;
+  state.activeId = null;
   state.view = 'train';
-  sortSessions();
   saveState();
   render();
 }
 
 function startEmptySession(date) {
-  const session = {
+  // (drafts are discarded silently when starting a new session — undo via toast if needed)
+  state.draft = {
     id: uid(),
     date: date || todayISO(),
     dayId: null,
@@ -2389,23 +2833,47 @@ function startEmptySession(date) {
     createdAt: Date.now(),
     exercises: [],
   };
-  state.sessions.push(session);
-  state.activeId = session.id;
+  state.activeId = null;
   state.view = 'train';
-  sortSessions();
   saveState();
   pendingFocus = '#new-exercise-name';
   render();
 }
 
-function createDefaultSets(count, reps, weight) {
+function saveDraft() {
+  if (!state.draft) return;
+  const session = state.draft;
+  state.sessions.push(session);
+  state.activeId = session.id;
+  state.draft = null;
+  sortSessions();
+  saveState();
+  render();
+  showInfoToast(`Workout saved · ${formatVolume(sessionVolume(session))} kg`);
+}
+
+function discardDraft() {
+  if (!state.draft) return;
+  const draftBackup = state.draft;
+  state.draft = null;
+  saveState();
+  render();
+  showUndoToast('Draft discarded', () => {
+    state.draft = draftBackup;
+    saveState();
+    render();
+  });
+}
+
+function createDefaultSets(count, reps, machineWeight, plateWeight) {
   const sets = [];
   const n = Math.max(1, Math.min(20, Number(count) || 1));
   for (let i = 0; i < n; i++) {
     sets.push({
       id: uid(),
       reps: reps || '',
-      weight: weight || '',
+      machineWeight: machineWeight || '',
+      plateWeight: plateWeight || '',
       complete: false,
     });
   }
@@ -2442,28 +2910,28 @@ function deleteSession(id) {
 }
 
 function setSessionDate(id, date) {
-  const s = getSession(id);
+  const s = getEditingSession(id);
   if (!s || !date) return;
   s.date = date;
-  sortSessions();
+  if (!isDraftId(id)) sortSessions();
   saveState();
   render();
 }
 
 function setSessionDayName(id, name) {
-  const s = getSession(id);
+  const s = getEditingSession(id);
   if (!s) return;
   s.dayName = name;
   saveState();
 }
 
 function addSessionExercise(sessionId, name) {
-  const s = getSession(sessionId);
+  const s = getEditingSession(sessionId);
   if (!s) return;
   s.exercises.push({
     id: uid(),
     name: name || '',
-    sets: [{ id: uid(), reps: '', weight: '', complete: false }],
+    sets: [{ id: uid(), reps: '', machineWeight: '', plateWeight: '', complete: false }],
   });
   saveState();
   pendingFocus = '#new-exercise-name';
@@ -2471,7 +2939,7 @@ function addSessionExercise(sessionId, name) {
 }
 
 function deleteSessionExercise(sessionId, exId) {
-  const s = getSession(sessionId);
+  const s = getEditingSession(sessionId);
   if (!s) return;
   const idx = s.exercises.findIndex(e => e.id === exId);
   if (idx < 0) return;
@@ -2480,7 +2948,7 @@ function deleteSessionExercise(sessionId, exId) {
   saveState();
   render();
   showUndoToast(`Removed "${removed.name || 'exercise'}"`, () => {
-    const sx = getSession(sessionId);
+    const sx = getEditingSession(sessionId);
     if (!sx) return;
     sx.exercises.splice(idx, 0, removed);
     saveState();
@@ -2489,7 +2957,7 @@ function deleteSessionExercise(sessionId, exId) {
 }
 
 function updateSessionExerciseName(sessionId, exId, name) {
-  const s = getSession(sessionId);
+  const s = getEditingSession(sessionId);
   const ex = s?.exercises.find(e => e.id === exId);
   if (!ex) return;
   ex.name = name;
@@ -2497,14 +2965,15 @@ function updateSessionExerciseName(sessionId, exId, name) {
 }
 
 function addSessionSet(sessionId, exId) {
-  const s = getSession(sessionId);
+  const s = getEditingSession(sessionId);
   const ex = s?.exercises.find(e => e.id === exId);
   if (!ex) return;
   const last = ex.sets[ex.sets.length - 1];
   const newSet = {
     id: uid(),
     reps: last?.reps ?? '',
-    weight: last?.weight ?? '',
+    machineWeight: last?.machineWeight ?? '',
+    plateWeight: last?.plateWeight ?? '',
     complete: false,
   };
   ex.sets.push(newSet);
@@ -2514,7 +2983,7 @@ function addSessionSet(sessionId, exId) {
 }
 
 function deleteSessionSet(sessionId, exId, setId) {
-  const s = getSession(sessionId);
+  const s = getEditingSession(sessionId);
   const ex = s?.exercises.find(e => e.id === exId);
   if (!ex) return;
   ex.sets = ex.sets.filter(set => set.id !== setId);
@@ -2523,7 +2992,7 @@ function deleteSessionSet(sessionId, exId, setId) {
 }
 
 function updateSessionSet(sessionId, exId, setId, field, value) {
-  const s = getSession(sessionId);
+  const s = getEditingSession(sessionId);
   const ex = s?.exercises.find(e => e.id === exId);
   const set = ex?.sets.find(x => x.id === setId);
   if (!set) return;
@@ -2532,14 +3001,12 @@ function updateSessionSet(sessionId, exId, setId, field, value) {
 }
 
 function toggleSessionSet(sessionId, exId, setId) {
-  const s = getSession(sessionId);
+  const s = getEditingSession(sessionId);
   const ex = s?.exercises.find(e => e.id === exId);
   const set = ex?.sets.find(x => x.id === setId);
   if (!set) return;
   set.complete = !set.complete;
   saveState();
-
-  // Toggle complete-state can change PB status, so re-render the affected exercise card and the summary.
   render();
 }
 
@@ -2607,21 +3074,7 @@ function importJSON(file) {
   reader.onload = e => {
     try {
       const parsed = JSON.parse(e.target.result);
-      const incoming = parsed.state || parsed;
-      const sessions = Array.isArray(incoming.sessions) ? incoming.sessions : null;
-      const split = incoming.split && Array.isArray(incoming.split.days) ? incoming.split : null;
-      if (!sessions || !split) throw new Error('Not a valid GymLog backup file');
-      const ok = confirm(
-        `Import ${sessions.length} session${sessions.length === 1 ? '' : 's'} and ${split.days.length} split day${split.days.length === 1 ? '' : 's'}?\n\nThis will REPLACE all current data on this device.`
-      );
-      if (!ok) return;
-      state.sessions = sessions;
-      state.split = split;
-      state.activeId = incoming.activeId || null;
-      sortSessions();
-      saveState();
-      ensureValid();
-      render();
+      applyImportedData(parsed, { confirmFirst: true });
       showInfoToast('Data imported successfully');
     } catch (err) {
       alert('Import failed: ' + err.message);
@@ -2629,6 +3082,232 @@ function importJSON(file) {
   };
   reader.onerror = () => alert('Could not read file');
   reader.readAsText(file);
+}
+
+function buildExportPayload() {
+  return {
+    schema: STORAGE_KEY,
+    exportedAt: new Date().toISOString(),
+    state: {
+      split: state.split,
+      sessions: state.sessions,
+      activeId: state.activeId,
+    },
+  };
+}
+
+function applyImportedData(parsed, { confirmFirst = false } = {}) {
+  const incoming = parsed.state || parsed;
+  const sessions = Array.isArray(incoming.sessions) ? incoming.sessions : null;
+  const split = incoming.split && Array.isArray(incoming.split.days) ? incoming.split : null;
+  if (!sessions || !split) throw new Error('Not a valid GymLog backup');
+  if (confirmFirst) {
+    const ok = confirm(
+      `Import ${sessions.length} session${sessions.length === 1 ? '' : 's'} and ${split.days.length} split day${split.days.length === 1 ? '' : 's'}?\n\nThis will REPLACE all current data on this device.`
+    );
+    if (!ok) return false;
+  }
+  state.sessions = sessions;
+  state.split = split;
+  state.activeId = incoming.activeId || null;
+  sortSessions();
+  saveState({ skipAutoSync: true });
+  ensureValid();
+  render();
+  return true;
+}
+
+/* ────────────────────────────────────────────
+   GITHUB GIST SYNC
+   ──────────────────────────────────────────── */
+
+const SYNC_KEY = 'gymlog.sync';
+const GIST_FILENAME = 'gymlog.json';
+
+const syncConfig = {
+  token: '',
+  gistId: '',
+  autoSync: false,
+  lastSyncedAt: null,
+};
+
+let autoSyncTimer = null;
+let syncing = false;
+
+function loadSyncConfig() {
+  try {
+    const raw = localStorage.getItem(SYNC_KEY);
+    if (raw) Object.assign(syncConfig, JSON.parse(raw));
+  } catch (e) {
+    console.warn('Failed to load sync config:', e);
+  }
+}
+
+function saveSyncConfig() {
+  try {
+    localStorage.setItem(SYNC_KEY, JSON.stringify(syncConfig));
+  } catch (e) {
+    console.warn('Failed to save sync config:', e);
+  }
+}
+
+function setSyncStatus(text, kind) {
+  const el = $('#sync-status');
+  if (el) {
+    el.textContent = text;
+    el.classList.remove('ok', 'err', 'busy');
+    if (kind) el.classList.add(kind);
+  }
+}
+
+function setSyncLast() {
+  const el = $('#sync-last');
+  if (!el) return;
+  if (!syncConfig.lastSyncedAt) {
+    el.textContent = 'Last synced: never';
+    return;
+  }
+  const ago = relativeTime(syncConfig.lastSyncedAt);
+  el.textContent = `Last synced: ${ago}`;
+}
+
+function relativeTime(iso) {
+  const then = new Date(iso).getTime();
+  const diff = Math.max(0, Date.now() - then);
+  const sec = Math.floor(diff / 1000);
+  if (sec < 60) return 'just now';
+  const min = Math.floor(sec / 60);
+  if (min < 60) return `${min} min${min === 1 ? '' : 's'} ago`;
+  const hr = Math.floor(min / 60);
+  if (hr < 24) return `${hr} hour${hr === 1 ? '' : 's'} ago`;
+  const days = Math.floor(hr / 24);
+  if (days < 30) return `${days} day${days === 1 ? '' : 's'} ago`;
+  return new Date(iso).toLocaleDateString();
+}
+
+async function ghFetch(path, options = {}) {
+  if (!syncConfig.token) throw new Error('No GitHub token configured');
+  const res = await fetch(`https://api.github.com${path}`, {
+    ...options,
+    headers: {
+      'Accept': 'application/vnd.github+json',
+      'X-GitHub-Api-Version': '2022-11-28',
+      'Authorization': `Bearer ${syncConfig.token}`,
+      ...(options.headers || {}),
+    },
+  });
+  if (!res.ok) {
+    let detail = '';
+    try { const j = await res.json(); detail = j.message ? `: ${j.message}` : ''; } catch {}
+    throw new Error(`GitHub ${res.status}${detail}`);
+  }
+  return res.json();
+}
+
+async function findExistingGist() {
+  if (syncConfig.gistId) return syncConfig.gistId;
+  // Look for an existing gist with our filename in user's first 100 gists.
+  const gists = await ghFetch('/gists?per_page=100');
+  const found = gists.find(g => g.files && g.files[GIST_FILENAME]);
+  if (found) {
+    syncConfig.gistId = found.id;
+    saveSyncConfig();
+    return found.id;
+  }
+  return null;
+}
+
+async function findOrCreateGist() {
+  const existing = await findExistingGist();
+  if (existing) return existing;
+  const data = await ghFetch('/gists', {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({
+      description: 'GymLog workout data',
+      public: false,
+      files: {
+        [GIST_FILENAME]: { content: JSON.stringify(buildExportPayload(), null, 2) },
+      },
+    }),
+  });
+  syncConfig.gistId = data.id;
+  saveSyncConfig();
+  return data.id;
+}
+
+async function pushToGist() {
+  if (syncing) return;
+  if (!syncConfig.token) { alert('Add a GitHub token first.'); return; }
+  syncing = true;
+  setSyncStatus('Syncing…', 'busy');
+  try {
+    const id = await findOrCreateGist();
+    const content = JSON.stringify(buildExportPayload(), null, 2);
+    await ghFetch(`/gists/${id}`, {
+      method: 'PATCH',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ files: { [GIST_FILENAME]: { content } } }),
+    });
+    syncConfig.lastSyncedAt = new Date().toISOString();
+    saveSyncConfig();
+    setSyncStatus('Synced', 'ok');
+    setSyncLast();
+    showInfoToast('Pushed to Gist');
+    // Keep status fresh in the field
+    const idInput = $('#sync-gist-id');
+    if (idInput && !idInput.value) idInput.value = syncConfig.gistId;
+  } catch (e) {
+    console.error(e);
+    setSyncStatus('Failed', 'err');
+    showInfoToast('Sync failed: ' + e.message);
+  } finally {
+    syncing = false;
+  }
+}
+
+async function pullFromGist() {
+  if (syncing) return;
+  if (!syncConfig.token) { alert('Add a GitHub token first.'); return; }
+  syncing = true;
+  setSyncStatus('Pulling…', 'busy');
+  try {
+    const id = await findExistingGist();
+    if (!id) throw new Error(`No "${GIST_FILENAME}" gist on this account. Push from another device first, or paste the Gist ID.`);
+    const gist = await ghFetch(`/gists/${id}`);
+    const file = gist.files && gist.files[GIST_FILENAME];
+    if (!file) throw new Error(`Gist has no ${GIST_FILENAME}`);
+    let content = file.content;
+    if (file.truncated && file.raw_url) {
+      const raw = await fetch(file.raw_url);
+      content = await raw.text();
+    }
+    const parsed = JSON.parse(content);
+    const ok = applyImportedData(parsed, { confirmFirst: true });
+    if (!ok) { setSyncStatus('Cancelled'); return; }
+    syncConfig.lastSyncedAt = new Date().toISOString();
+    saveSyncConfig();
+    setSyncStatus('Synced', 'ok');
+    setSyncLast();
+    showInfoToast('Pulled from Gist');
+    // Reflect the now-known gist ID in the input
+    const idInput = $('#sync-gist-id');
+    if (idInput) idInput.value = syncConfig.gistId;
+  } catch (e) {
+    console.error(e);
+    setSyncStatus('Failed', 'err');
+    showInfoToast('Sync failed: ' + e.message);
+  } finally {
+    syncing = false;
+  }
+}
+
+function scheduleAutoSync() {
+  if (!syncConfig.autoSync || !syncConfig.token) return;
+  if (autoSyncTimer) clearTimeout(autoSyncTimer);
+  autoSyncTimer = setTimeout(() => {
+    pushToGist().catch(e => console.warn('Auto-sync failed:', e));
+  }, 2500);
 }
 
 /* ────────────────────────────────────────────
@@ -2655,10 +3334,13 @@ function renderTopStats() {
 }
 
 function renderTabs() {
-  // Records is no longer a primary nav target — fall back to history-active.
+  // Records lives inside History, settings is reached via the gear.
+  // Bottom nav and top tabs reflect the current top-level page; gear
+  // gets its own active state.
   const navView = state.view === 'records' ? 'history' : state.view;
   $$('.tab').forEach(el => el.classList.toggle('active', el.dataset.view === navView));
   $$('.bottom-nav-btn').forEach(el => el.classList.toggle('active', el.dataset.view === navView));
+  $$('.topbar-icon-btn').forEach(el => el.classList.toggle('active', el.dataset.view === state.view));
 }
 
 function renderPage() {
@@ -2666,10 +3348,11 @@ function renderPage() {
   // Reset scroll on view change so each page starts at top.
   page.scrollTop = 0;
   switch (state.view) {
-    case 'home':    page.innerHTML = renderHome();    attachHomeHandlers(); break;
-    case 'train':   page.innerHTML = renderTrain();   attachTrainHandlers(); break;
-    case 'history': page.innerHTML = renderHistory(); attachHistoryHandlers(); break;
-    case 'routine': page.innerHTML = renderRoutine(); attachRoutineHandlers(); break;
+    case 'home':     page.innerHTML = renderHome();     attachHomeHandlers(); break;
+    case 'train':    page.innerHTML = renderTrain();    attachTrainHandlers(); break;
+    case 'history':  page.innerHTML = renderHistory();  attachHistoryHandlers(); break;
+    case 'routine':  page.innerHTML = renderRoutine();  attachRoutineHandlers(); break;
+    case 'settings': page.innerHTML = renderSettings(); attachSettingsHandlers(); break;
   }
 }
 
@@ -2683,7 +3366,6 @@ function renderHome() {
       ${renderHomeStats()}
       <div id="calendar-container">${renderCalendar()}</div>
       <div id="cal-panel">${renderCalPanel(selectedDate)}</div>
-      ${renderBackupSection()}
     </div>`;
 }
 
@@ -2716,11 +3398,18 @@ function renderBackupSection() {
 function renderHomeHero() {
   const greeting = getGreeting();
   const dateLabel = formatDateLong(todayISO());
+  const draft = state.draft;
   const activeSession = state.activeId ? getSession(state.activeId) : null;
   const todaysDay = todaysSplitDay();
 
   let label, action, sub = '';
-  if (activeSession) {
+  if (draft) {
+    label = `Resume draft (${draft.dayName?.trim() || 'workout'})`;
+    action = 'resume';
+    const completed = sessionCompletedSets(draft);
+    const total = sessionTotalSets(draft);
+    sub = `Unsaved draft · ${completed}/${total} sets done — finish & tap Log Session`;
+  } else if (activeSession) {
     label = `Resume ${activeSession.dayName?.trim() || 'workout'}`;
     action = 'resume';
     const completed = sessionCompletedSets(activeSession);
@@ -2730,7 +3419,7 @@ function renderHomeHero() {
     label = `Start ${todaysDay.name}`;
     action = 'start-today';
     const n = todaysDay.exercises.length;
-    sub = `Today's plan: ${n} ${n === 1 ? 'exercise' : 'exercises'}`;
+    sub = `Today's plan: ${n} ${n === 1 ? 'exercise' : 'exercises'} — pre-fills as a draft you can save when done`;
   } else if (state.split.days.length) {
     label = 'Start a workout';
     action = 'go-train';
@@ -2894,6 +3583,7 @@ function renderCalPanel(iso) {
 /* ─── TRAIN ─── */
 
 function renderTrain() {
+  if (state.draft) return renderSessionView(state.draft);
   const session = getSession(state.activeId);
   return session ? renderSessionView(session) : renderDayPicker();
 }
@@ -2950,6 +3640,7 @@ function renderDayPicker() {
 }
 
 function renderSessionView(session) {
+  const isDraft = isDraftId(session.id);
   const totalSets = sessionTotalSets(session);
   const completedSets = sessionCompletedSets(session);
   const totalReps = sessionTotalReps(session);
@@ -2957,21 +3648,52 @@ function renderSessionView(session) {
   const progressPct = totalSets > 0 ? (completedSets / totalSets) * 100 : 0;
   const placeholderTitle = session.dayName || formatDateLong(session.date);
 
+  // Header buttons differ for drafts vs saved sessions.
+  const headerLeft = isDraft
+    ? `<button class="session-back-btn" id="session-discard-btn" title="Discard draft">
+         <svg viewBox="0 0 24 24"><use href="#icon-x"/></svg>
+         Cancel
+       </button>`
+    : `<button class="session-back-btn" id="session-back-btn">
+         <svg viewBox="0 0 24 24"><use href="#icon-arrow-left"/></svg>
+         End workout
+       </button>`;
+
+  const headerRight = isDraft
+    ? '' // no trash for drafts; use Cancel
+    : `<button class="icon-btn lg danger" id="delete-session-btn" title="Delete session">
+         <svg viewBox="0 0 24 24"><use href="#icon-trash"/></svg>
+       </button>`;
+
+  const draftBanner = isDraft
+    ? `<div class="draft-banner">
+         <svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg>
+         <span>Draft — nothing is saved to history yet. Hit <strong>Log Session</strong> below when you're done.</span>
+       </div>`
+    : '';
+
+  const saveBar = isDraft
+    ? `<div class="draft-save-bar">
+         <button class="btn btn-primary btn-xl" id="save-draft-btn">
+           <svg viewBox="0 0 24 24" width="16" height="16"><use href="#icon-check"/></svg>
+           Log Session
+         </button>
+         <button class="btn-link-danger" id="save-draft-discard-btn">Discard draft</button>
+       </div>`
+    : '';
+
   return `
     <div class="session-wrap">
       <div class="session-header">
         <div class="session-header-top">
           <div class="session-header-top-left">
-            <button class="session-back-btn" id="session-back-btn">
-              <svg viewBox="0 0 24 24"><use href="#icon-arrow-left"/></svg>
-              End workout
-            </button>
+            ${headerLeft}
             <input type="date" class="session-date-input" id="session-date" value="${escapeHtml(session.date)}" />
           </div>
-          <button class="icon-btn lg danger" id="delete-session-btn" title="Delete session">
-            <svg viewBox="0 0 24 24"><use href="#icon-trash"/></svg>
-          </button>
+          ${headerRight}
         </div>
+
+        ${draftBanner}
 
         <div class="session-title-row">
           <input
@@ -2982,7 +3704,7 @@ function renderSessionView(session) {
             value="${escapeHtml(session.dayName)}"
             autocomplete="off"
           />
-          ${session.dayId ? `<span class="session-day-pill">From split</span>` : ''}
+          ${session.dayId ? `<span class="session-day-pill">${isDraft ? 'Draft from split' : 'From split'}</span>` : ''}
         </div>
 
         <div class="session-summary">
@@ -3020,6 +3742,8 @@ function renderSessionView(session) {
           Add Exercise
         </button>
       </form>
+
+      ${saveBar}
     </div>`;
 }
 
@@ -3077,7 +3801,16 @@ function renderSessionExercise(session, ex) {
 
       <div class="sets">
         <div class="sets-header">
-          <div>Set</div><div>Reps</div><div>Weight (kg)</div><div>Volume</div><div></div><div></div>
+          <div>Set</div>
+          <div>Reps</div>
+          <div class="weight-pair-headers">
+            <div>Weight</div>
+            <div></div>
+            <div>Plates</div>
+          </div>
+          <div>Vol</div>
+          <div></div>
+          <div></div>
         </div>
         ${ex.sets.map((set, i) => renderSessionSet(session, ex, set, i + 1)).join('')}
       </div>
@@ -3091,10 +3824,12 @@ function renderSessionExercise(session, ex) {
 
 function renderSessionSet(session, ex, set, num) {
   const reps = Number(set.reps) || 0;
-  const weight = Number(set.weight) || 0;
-  const volume = reps * weight;
+  const total = setWeight(set);
+  const volume = reps * total;
   const isPB = isPBSet(session, ex, set);
   const cls = ['set', set.complete ? 'complete' : '', isPB ? 'is-pb' : ''].filter(Boolean).join(' ');
+  const machineVal = set.machineWeight === '' || set.machineWeight == null ? '' : escapeHtml(String(set.machineWeight));
+  const plateVal   = set.plateWeight   === '' || set.plateWeight   == null ? '' : escapeHtml(String(set.plateWeight));
   return `
     <div class="${cls}" data-set-id="${set.id}" data-exercise-id="${ex.id}">
       <div class="set-num">${num}</div>
@@ -3103,11 +3838,17 @@ function renderSessionSet(session, ex, set, num) {
         placeholder="0"
         data-set-field="reps" data-exercise-id="${ex.id}" data-set-id="${set.id}"
         aria-label="Reps for set ${num}" />
-      <input type="number" class="set-input" min="0" step="0.5" inputmode="decimal"
-        value="${set.weight === '' || set.weight == null ? '' : escapeHtml(String(set.weight))}"
-        placeholder="0"
-        data-set-field="weight" data-exercise-id="${ex.id}" data-set-id="${set.id}"
-        aria-label="Weight for set ${num}" />
+      <div class="weight-pair">
+        <input type="number" class="set-input weight-machine" min="0" step="0.5" inputmode="decimal"
+          value="${machineVal}" placeholder="0"
+          data-set-field="machineWeight" data-exercise-id="${ex.id}" data-set-id="${set.id}"
+          aria-label="Weight for set ${num}" />
+        <span class="weight-pair-plus">+</span>
+        <input type="number" class="set-input weight-plate" min="0" step="0.25" inputmode="decimal"
+          value="${plateVal}" placeholder="0"
+          data-set-field="plateWeight" data-exercise-id="${ex.id}" data-set-id="${set.id}"
+          aria-label="Additional plates for set ${num}" />
+      </div>
       <div class="set-volume" data-set-volume>
         ${formatVolume(volume)}${isPB ? '<svg class="set-pb-marker" width="11" height="11" viewBox="0 0 24 24"><use href="#icon-flame"/></svg>' : ''}
       </div>
@@ -3285,16 +4026,23 @@ function recordRowsHtml(names) {
           <div class="record-date">No completed sets</div>
         </div>`;
     }
+    const heaviestStr = best.plateWeight > 0
+      ? `${formatWeight(best.machineWeight)} <span class="record-plus">+</span> ${formatWeight(best.plateWeight)}`
+      : formatWeight(best.weight);
+    const totalLine = best.plateWeight > 0
+      ? `<div class="record-stat-breakdown">= ${formatWeight(best.weight)} kg total</div>`
+      : '';
     return `
       <div class="record-row">
         <div class="record-name">${escapeHtml(name)}</div>
         <div class="record-stat">
           <div class="record-stat-label">Heaviest</div>
-          <div class="record-stat-value gold">${formatWeight(best.weight)}<span class="unit">kg × ${best.reps}</span></div>
+          <div class="record-stat-value gold">${heaviestStr}<span class="unit"> kg × ${best.reps}</span></div>
+          ${totalLine}
         </div>
         <div class="record-stat">
           <div class="record-stat-label">Est. 1RM</div>
-          <div class="record-stat-value">${formatWeight(e1.e1rm)}<span class="unit">kg</span></div>
+          <div class="record-stat-value">${formatWeight(e1.e1rm)}<span class="unit"> kg</span></div>
         </div>
         <div class="record-date">${escapeHtml(daysAgoText(best.date) || formatDateShort(best.date))}</div>
       </div>`;
@@ -3375,8 +4123,11 @@ function renderRoutineDay(day) {
              value="${ex.defaultReps ?? ''}" placeholder="10"
              data-routine-ex-field="defaultReps" data-day-id="${day.id}" data-ex-id="${ex.id}" />
       <input type="number" class="routine-ex-num" min="0" step="0.5" inputmode="decimal"
-             value="${ex.defaultWeight ?? ''}" placeholder="kg"
-             data-routine-ex-field="defaultWeight" data-day-id="${day.id}" data-ex-id="${ex.id}" />
+             value="${ex.defaultMachineWeight ?? ''}" placeholder="kg"
+             data-routine-ex-field="defaultMachineWeight" data-day-id="${day.id}" data-ex-id="${ex.id}" />
+      <input type="number" class="routine-ex-num" min="0" step="0.25" inputmode="decimal"
+             value="${ex.defaultPlateWeight ?? ''}" placeholder="0"
+             data-routine-ex-field="defaultPlateWeight" data-day-id="${day.id}" data-ex-id="${ex.id}" />
       <button class="icon-btn danger" data-delete-routine-ex data-day-id="${day.id}" data-ex-id="${ex.id}" title="Delete">
         <svg viewBox="0 0 24 24"><use href="#icon-x"/></svg>
       </button>
@@ -3405,7 +4156,7 @@ function renderRoutineDay(day) {
       <div class="routine-exercises">
         ${day.exercises.length ? `
           <div class="routine-ex-headers">
-            <div>Exercise</div><div>Sets</div><div>Reps</div><div>Weight</div><div></div>
+            <div>Exercise</div><div>Sets</div><div>Reps</div><div>Weight</div><div>Plates</div><div></div>
           </div>` : ''}
         ${exHtml}
         <button class="routine-add-ex-btn" data-add-routine-ex="${day.id}">
@@ -3413,6 +4164,114 @@ function renderRoutineDay(day) {
           Add Exercise
         </button>
       </div>
+    </div>`;
+}
+
+/* ─── SETTINGS ─── */
+
+function renderSettings() {
+  return `
+    <div class="settings-wrap">
+      <div class="page-header">
+        <div>
+          <div class="page-title">Settings</div>
+          <div class="page-subtitle">Backup, sync, and manage your data</div>
+        </div>
+      </div>
+
+      ${renderBackupSection()}
+      ${renderGistSyncSection()}
+      ${renderAboutSection()}
+    </div>`;
+}
+
+function renderAboutSection() {
+  return `
+    <div class="settings-section settings-about">
+      <div class="settings-section-row" style="margin-bottom:0;">
+        <div>
+          <div class="settings-section-title">GymLog</div>
+          <div class="settings-section-sub">Compare this string across devices to confirm they're running the same build.</div>
+        </div>
+        <div class="settings-version">
+          <div class="settings-version-tag">v${escapeHtml(APP_VERSION)}</div>
+          <div class="settings-version-date">${escapeHtml(APP_BUILD_DATE)}</div>
+        </div>
+      </div>
+    </div>`;
+}
+
+function renderGistSyncSection() {
+  const tokenSet = !!syncConfig.token;
+  const linked = !!syncConfig.gistId;
+  let statusText = 'Not configured';
+  let statusKind = '';
+  if (tokenSet && linked) { statusText = 'Linked'; statusKind = 'ok'; }
+  else if (tokenSet)      { statusText = 'Ready';  statusKind = 'ok'; }
+
+  return `
+    <div class="settings-section">
+      <div class="settings-section-row">
+        <div>
+          <div class="settings-section-title">GitHub Gist Sync</div>
+          <div class="settings-section-sub">Sync data across devices via a private Gist.</div>
+        </div>
+        <div class="settings-section-status ${statusKind}" id="sync-status">${statusText}</div>
+      </div>
+
+      <details class="settings-help">
+        <summary>How to set this up</summary>
+        <ol>
+          <li>Open <a href="https://github.com/settings/tokens?type=beta" target="_blank" rel="noopener">github.com/settings/tokens</a> and create a token. A <strong>fine-grained</strong> token works — under <em>Account permissions</em> set <code>Gists</code> to <strong>Read and write</strong>. Or use a classic token with the <code>gist</code> scope.</li>
+          <li>Copy the token (starts with <code>github_pat_</code> or <code>ghp_</code>) and paste it below.</li>
+          <li>Hit <strong>Push to Gist</strong> — the app creates a private Gist named <code>gymlog.json</code>. The Gist ID auto-fills.</li>
+          <li>On another device: paste the same token (or token + Gist ID) and hit <strong>Pull from Gist</strong> to load.</li>
+          <li>Turn on <em>Auto-sync</em> to push every change automatically (debounced).</li>
+        </ol>
+        <p style="margin-top:8px">The token lives only in this browser's localStorage and is sent only to <code>api.github.com</code>. It never reaches any other server.</p>
+      </details>
+
+      <div class="settings-field">
+        <label for="sync-token">GitHub token</label>
+        <div class="settings-input-row">
+          <input type="password" class="settings-input" id="sync-token"
+                 placeholder="github_pat_… or ghp_…"
+                 autocomplete="off" spellcheck="false"
+                 value="${escapeHtml(syncConfig.token)}" />
+          <button class="icon-btn" id="sync-token-toggle" title="Show/hide token" aria-label="Show/hide token">
+            <svg viewBox="0 0 24 24"><use href="#icon-eye"/></svg>
+          </button>
+        </div>
+      </div>
+
+      <div class="settings-field">
+        <label for="sync-gist-id">Gist ID <span class="settings-field-hint">(auto-filled, or paste from another device)</span></label>
+        <input type="text" class="settings-input" id="sync-gist-id"
+               placeholder="e.g. 3a4f9b1c2d5e..."
+               autocomplete="off" spellcheck="false"
+               value="${escapeHtml(syncConfig.gistId)}" />
+      </div>
+
+      <div class="settings-actions">
+        <button class="btn" id="sync-push">
+          <svg viewBox="0 0 24 24" width="14" height="14"><use href="#icon-cloud-up"/></svg>
+          Push to Gist
+        </button>
+        <button class="btn" id="sync-pull">
+          <svg viewBox="0 0 24 24" width="14" height="14"><use href="#icon-cloud-down"/></svg>
+          Pull from Gist
+        </button>
+      </div>
+
+      <label class="settings-toggle" for="sync-auto">
+        <input type="checkbox" id="sync-auto" ${syncConfig.autoSync ? 'checked' : ''} />
+        <div>
+          <div class="settings-toggle-label">Auto-sync on every change</div>
+          <div class="settings-toggle-sub">Pushes to your Gist 2.5s after each edit.</div>
+        </div>
+      </label>
+
+      <div class="settings-status-line" id="sync-last">Last synced: ${syncConfig.lastSyncedAt ? relativeTime(syncConfig.lastSyncedAt) : 'never'}</div>
     </div>`;
 }
 
@@ -3438,7 +4297,6 @@ function attachHomeHandlers() {
 
   attachCalendarHandlers();
   attachCalPanelHandlers();
-  attachBackupHandlers();
 }
 
 function attachCalendarHandlers() {
@@ -3514,19 +4372,22 @@ function attachTrainHandlers() {
   });
   $('#goto-routine')?.addEventListener('click', () => setView('routine'));
 
-  // Active session
-  const session = getSession(state.activeId);
+  // Whatever is being edited — draft if there is one, else active saved session.
+  const session = state.draft || getSession(state.activeId);
   if (!session) return;
+  const isDraft = isDraftId(session.id);
 
+  // Header buttons (differ for draft vs saved)
   $('#session-back-btn')?.addEventListener('click', () => closeSession());
+  $('#session-discard-btn')?.addEventListener('click', () => discardDraft());
+  $('#delete-session-btn')?.addEventListener('click', () => deleteSession(session.id));
+
+  // Save / discard at bottom of draft view
+  $('#save-draft-btn')?.addEventListener('click', () => saveDraft());
+  $('#save-draft-discard-btn')?.addEventListener('click', () => discardDraft());
 
   $('#session-date')?.addEventListener('change', e => setSessionDate(session.id, e.target.value));
-
   $('#session-name')?.addEventListener('input', e => setSessionDayName(session.id, e.target.value));
-
-  $('#delete-session-btn')?.addEventListener('click', () => {
-    if (confirm('Delete this session and all its exercises?')) deleteSession(session.id);
-  });
 
   $('#add-exercise-form')?.addEventListener('submit', e => {
     e.preventDefault();
@@ -3561,15 +4422,23 @@ function attachTrainHandlers() {
       const value = e.target.value;
       updateSessionSet(session.id, el.dataset.exerciseId, el.dataset.setId, el.dataset.setField, value);
 
-      // Update set-row volume + summaries in place — preserves focus.
+      // Update this row's volume + summary numbers without a full re-render.
       const setEl = el.closest('.set');
       if (setEl) {
-        const repsEl = $('[data-set-field="reps"]', setEl);
-        const weightEl = $('[data-set-field="weight"]', setEl);
-        const reps = parseFloat(repsEl?.value) || 0;
-        const weight = parseFloat(weightEl?.value) || 0;
+        const repsEl    = $('[data-set-field="reps"]', setEl);
+        const machineEl = $('[data-set-field="machineWeight"]', setEl);
+        const plateEl   = $('[data-set-field="plateWeight"]', setEl);
+        const reps    = parseFloat(repsEl?.value) || 0;
+        const machine = parseFloat(machineEl?.value) || 0;
+        const plate   = parseFloat(plateEl?.value) || 0;
+        const total   = machine + plate;
         const volEl = $('[data-set-volume]', setEl);
-        if (volEl) volEl.textContent = formatVolume(reps * weight);
+        if (volEl) {
+          // Preserve any trailing PB marker
+          const pbMarker = $('.set-pb-marker', volEl);
+          volEl.textContent = formatVolume(reps * total);
+          if (pbMarker) volEl.appendChild(pbMarker);
+        }
       }
       updateSummariesInPlace();
     });
@@ -3592,7 +4461,7 @@ function attachTrainHandlers() {
 }
 
 function updateSummariesInPlace() {
-  const session = getSession(state.activeId);
+  const session = state.draft || getSession(state.activeId);
   if (!session) return;
 
   const totalSets = sessionTotalSets(session);
@@ -3666,12 +4535,7 @@ function attachRoutineHandlers() {
   });
 
   $$('[data-delete-day]').forEach(el => {
-    el.addEventListener('click', () => {
-      const day = getDay(el.dataset.deleteDay);
-      if (!day) return;
-      if (day.exercises.length > 0 && !confirm(`Delete "${day.name}" and its ${day.exercises.length} exercises?`)) return;
-      deleteSplitDay(el.dataset.deleteDay);
-    });
+    el.addEventListener('click', () => deleteSplitDay(el.dataset.deleteDay));
   });
 
   $$('[data-add-routine-ex]').forEach(el => {
@@ -3693,15 +4557,58 @@ function attachRoutineHandlers() {
   });
 }
 
+function attachSettingsHandlers() {
+  // Backup
+  attachBackupHandlers();
+
+  // Gist sync — token input
+  const tokenInput = $('#sync-token');
+  tokenInput?.addEventListener('input', e => {
+    syncConfig.token = e.target.value.trim();
+    saveSyncConfig();
+    setSyncStatus(syncConfig.token ? 'Ready' : 'Not configured', syncConfig.token ? 'ok' : '');
+  });
+
+  // Show/hide token
+  $('#sync-token-toggle')?.addEventListener('click', () => {
+    if (!tokenInput) return;
+    const showing = tokenInput.type === 'text';
+    tokenInput.type = showing ? 'password' : 'text';
+    const useEl = $('#sync-token-toggle svg use');
+    if (useEl) useEl.setAttribute('href', showing ? '#icon-eye' : '#icon-eye-off');
+  });
+
+  // Gist ID input
+  $('#sync-gist-id')?.addEventListener('input', e => {
+    syncConfig.gistId = e.target.value.trim();
+    saveSyncConfig();
+  });
+
+  // Push / Pull
+  $('#sync-push')?.addEventListener('click', () => pushToGist());
+  $('#sync-pull')?.addEventListener('click', () => pullFromGist());
+
+  // Auto-sync toggle
+  $('#sync-auto')?.addEventListener('change', e => {
+    syncConfig.autoSync = e.target.checked;
+    saveSyncConfig();
+    if (syncConfig.autoSync && syncConfig.token) {
+      // Push current state immediately so the gist matches what's on screen.
+      pushToGist();
+    }
+  });
+}
+
 /* ────────────────────────────────────────────
    INIT
    ──────────────────────────────────────────── */
 
 document.addEventListener('DOMContentLoaded', () => {
   loadState();
+  loadSyncConfig();
   ensureValid();
 
-  $$('.tab, .bottom-nav-btn').forEach(el => {
+  $$('.tab, .bottom-nav-btn, .topbar-icon-btn').forEach(el => {
     el.addEventListener('click', () => setView(el.dataset.view));
   });
 
