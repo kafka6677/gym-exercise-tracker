@@ -2,13 +2,13 @@
 <html lang="en">
 <head>
 <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0, user-scalable=no, viewport-fit=cover">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0, user-scalable=no">
 <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
 <meta http-equiv="Pragma" content="no-cache">
 <meta http-equiv="Expires" content="0">
 <meta name="theme-color" content="#000000">
 <meta name="apple-mobile-web-app-capable" content="yes">
-<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<meta name="apple-mobile-web-app-status-bar-style" content="black">
 <meta name="apple-mobile-web-app-title" content="GymLog">
 <meta name="mobile-web-app-capable" content="yes">
 <link rel="icon" href="data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='%2310b981'><path d='M20.57 14.86 22 13.43 20.57 12 17 15.57 8.43 7 12 3.43 10.57 2 9.14 3.43 7.71 2 5.57 4.14 4.14 2.71 2.71 4.14 4.14 5.57 2 7.71l1.43 1.43L2 10.57 3.43 12 7 8.43 15.57 17 12 20.57 13.43 22l1.43-1.43L16.29 22l2.14-2.14 1.43 1.43 1.43-1.43-1.43-1.43L22 16.29z'/></svg>">
@@ -58,9 +58,11 @@ html, body {
   padding: 0;
 }
 
-/* User-controlled UI scale. Applied to .app so the bottom nav (sibling of
-   .app, see body markup) stays anchored to the actual viewport. */
-.app { zoom: var(--ui-scale, 1); }
+/* User-controlled UI scale via root font-size — `zoom` on .app caused
+   iOS PWA input-focus bugs and layout shifts during navigation, so it
+   moved here. (Most pixel-based sizes don't follow font-size, so the
+   scale primarily affects text. Buttons / spacing stay structural.) */
+:root { font-size: calc(14px * var(--ui-scale, 1)); }
 
 body {
   /* In normal flow (no position:fixed) — a fixed body was preventing iOS
@@ -2408,7 +2410,7 @@ input::placeholder { color: var(--text-4); }
    VERSION
    ──────────────────────────────────────────── */
 
-const APP_VERSION = '1.4.4';
+const APP_VERSION = '1.5.0';
 const APP_BUILD_DATE = '2026-05-05';
 
 /* ────────────────────────────────────────────
