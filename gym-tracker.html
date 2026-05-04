@@ -15,7 +15,7 @@
 <title>GymLog · Workout Tracker</title>
 <style>
 *, *::before, *::after { margin: 0; padding: 0; box-sizing: border-box; }
-html { color-scheme: dark; background: var(--bg); }
+html { color-scheme: dark; background: #000; }
 
 :root {
   --bg: #08080b;
@@ -63,16 +63,18 @@ html, body {
 .app { zoom: var(--ui-scale, 1); }
 
 body {
-  /* iOS PWA: position-fixed elements get clipped at the layout-viewport
-     bottom (~34px above the actual screen edge). To avoid that, body is a
-     flex column with the bottom nav as its last flex item — flex layout
-     uses the body's *actual* rendered height (set via JS to
-     window.innerHeight), so the nav lands at the literal screen bottom. */
+  /* On iOS PWA `window.innerHeight` and `100dvh` both report the *layout*
+     viewport, which excludes the home-indicator safe-area zone. `100lvh`
+     (large viewport height, iOS 15.5+) is the only unit that returns the
+     literal screen height including that zone — body filling that means
+     the in-flow bottom nav lands at the *actual* screen bottom. */
   position: fixed;
   top: 0;
   left: 0;
   width: 100vw;
-  height: var(--app-height, 100dvh);
+  height: 100vh;
+  height: 100dvh;
+  height: 100lvh;
   display: flex;
   flex-direction: column;
 
@@ -1420,11 +1422,12 @@ input::placeholder { color: var(--text-4); }
 
 .bottom-nav {
   display: none;
-  /* In flex flow at the bottom of the body. body is position:fixed sized to
-     window.innerHeight, so its bottom == the actual screen bottom regardless
-     of iOS PWA's layout-viewport quirks. */
+  /* In flex flow at the bottom of body. Pure black background so that, if
+     iOS PWA still reserves the home-indicator safe-area below the body
+     despite 100lvh, that reserved area (which iOS draws in pure black) is
+     visually indistinguishable from the nav. */
   flex-shrink: 0;
-  background: var(--bg);
+  background: #000;
   border-top: 1px solid var(--border-subtle);
   padding-top: 8px;
   padding-bottom: 10px;
@@ -2413,7 +2416,7 @@ input::placeholder { color: var(--text-4); }
    VERSION
    ──────────────────────────────────────────── */
 
-const APP_VERSION = '1.3.9';
+const APP_VERSION = '1.4.0';
 const APP_BUILD_DATE = '2026-05-05';
 
 /* ────────────────────────────────────────────
