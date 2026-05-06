@@ -2619,7 +2619,7 @@ input::placeholder { color: var(--text-4); }
    VERSION
    ──────────────────────────────────────────── */
 
-const APP_VERSION = '1.8.7';
+const APP_VERSION = '1.8.8';
 const APP_BUILD_DATE = '2026-05-05';
 
 /* ────────────────────────────────────────────
@@ -4367,11 +4367,15 @@ function latestSessionForSplitDay(day) {
     return false;
   });
   if (!matches.length) return null;
-  matches.sort((a, b) => {
-    const ka = a.createdAt || a.date || '';
-    const kb = b.createdAt || b.date || '';
-    return kb.localeCompare(ka);
-  });
+  // createdAt is a numeric epoch ms; date is an ISO yyyy-mm-dd string.
+  // Coerce both to ms so a mixed bag (some old sessions only have date) sorts correctly.
+  const toMs = (s) => {
+    if (typeof s.createdAt === 'number') return s.createdAt;
+    if (s.createdAt) { const n = Number(s.createdAt); if (Number.isFinite(n)) return n; }
+    if (s.date) { const n = Date.parse(s.date); if (Number.isFinite(n)) return n; }
+    return 0;
+  };
+  matches.sort((a, b) => toMs(b) - toMs(a));
   return matches[0];
 }
 
