@@ -2619,7 +2619,7 @@ input::placeholder { color: var(--text-4); }
    VERSION
    ──────────────────────────────────────────── */
 
-const APP_VERSION = '1.8.6';
+const APP_VERSION = '1.8.7';
 const APP_BUILD_DATE = '2026-05-05';
 
 /* ────────────────────────────────────────────
@@ -3391,7 +3391,10 @@ function toggleSessionSet(sessionId, exId, setId) {
 }
 
 function setView(view) {
-  if (state.view === view) return;
+  // Re-render if the view doesn't match the last successfully-rendered view,
+  // even when state.view is already set — covers the case where a prior
+  // render threw and left stale DOM on screen.
+  if (state.view === view && lastRenderedView === view) return;
   state.view = view;
   saveState();
   render();
@@ -3795,15 +3798,29 @@ function renderPage() {
   // editing a value, etc.) — only reset to top when changing tabs.
   const isViewChange = lastRenderedView !== state.view;
   const previousScrollTop = page.scrollTop;
-  switch (state.view) {
-    case 'home':     page.innerHTML = renderHome();     attachHomeHandlers(); break;
-    case 'train':    page.innerHTML = renderTrain();    attachTrainHandlers(); break;
-    case 'history':  page.innerHTML = renderHistory();  attachHistoryHandlers(); break;
-    case 'routine':  page.innerHTML = renderRoutine();  attachRoutineHandlers(); break;
-    case 'settings': page.innerHTML = renderSettings(); attachSettingsHandlers(); break;
+  try {
+    switch (state.view) {
+      case 'home':     page.innerHTML = renderHome();     attachHomeHandlers(); break;
+      case 'train':    page.innerHTML = renderTrain();    attachTrainHandlers(); break;
+      case 'history':  page.innerHTML = renderHistory();  attachHistoryHandlers(); break;
+      case 'routine':  page.innerHTML = renderRoutine();  attachRoutineHandlers(); break;
+      case 'settings': page.innerHTML = renderSettings(); attachSettingsHandlers(); break;
+      default:         page.innerHTML = `<div class="empty-state"><div class="empty-text">Unknown view</div></div>`;
+    }
+    page.scrollTop = isViewChange ? 0 : previousScrollTop;
+    lastRenderedView = state.view;
+  } catch (err) {
+    console.error('renderPage failed for view', state.view, err);
+    page.innerHTML = `
+      <div class="empty-state">
+        <div class="empty-icon"><svg viewBox="0 0 24 24"><use href="#icon-x"/></svg></div>
+        <div class="empty-text">Something went wrong rendering this page</div>
+        <div class="empty-sub" style="word-break:break-word">${escapeHtml(String(err && err.message || err))}</div>
+        <button class="btn btn-primary btn-lg" data-view="home">Back to Dashboard</button>
+      </div>`;
+    page.querySelector('[data-view="home"]')?.addEventListener('click', () => setView('home'));
+    lastRenderedView = state.view;
   }
-  page.scrollTop = isViewChange ? 0 : previousScrollTop;
-  lastRenderedView = state.view;
 }
 
 /* ─── HOME / DASHBOARD ─── */
@@ -4393,18 +4410,21 @@ function renderRecentDayCard(day) {
       </div>`;
   }
 
-  const totalSets = sessionTotalSets(session);
-  const done = sessionCompletedSets(session);
-  const vol = sessionVolume(session);
+  const exercises = Array.isArray(session.exercises) ? session.exercises : [];
+  const safeSession = { ...session, exercises };
+  const totalSets = sessionTotalSets(safeSession);
+  const done = sessionCompletedSets(safeSession);
+  const vol = sessionVolume(safeSession);
   const isComplete = totalSets > 0 && done === totalSets;
-  const dateLabel = daysAgoText(session.date) || formatDateShort(session.date);
-  const pbCount = sessionHitPBCount(session);
+  const dateLabel = daysAgoText(session.date) || formatDateShort(session.date) || '';
+  let pbCount = 0;
+  try { pbCount = sessionHitPBCount(safeSession); } catch { pbCount = 0; }
   const pbBadge = pbCount
     ? `<span class="dot">·</span><span class="pb"><svg viewBox="0 0 24 24"><use href="#icon-flame"/></svg>${pbCount} PB${pbCount > 1 ? 's' : ''}</span>`
     : '';
 
   return `
-    <div class="recent-card has-session ${pbCount ? 'has-pb' : ''}" data-open-session="${session.id}" role="button" tabindex="0">
+    <div class="recent-card has-session ${pbCount ? 'has-pb' : ''}" data-open-session="${escapeHtml(session.id || '')}" role="button" tabindex="0">
       <div class="recent-card-header">
         <div class="recent-card-title">
           <div class="recent-card-name">${escapeHtml(dayName)}</div>
@@ -4421,24 +4441,25 @@ function renderRecentDayCard(day) {
         </div>
       </div>
       <div class="recent-ex-list">
-        ${session.exercises.map(ex => renderRecentExerciseRow(ex)).join('')}
+        ${exercises.map(ex => renderRecentExerciseRow(ex)).join('')}
       </div>
     </div>`;
 }
 
 function renderRecentExerciseRow(ex) {
-  const sets = ex.sets || [];
+  const sets = Array.isArray(ex?.sets) ? ex.sets : [];
   const body = sets.length
     ? `<div class="recent-ex-sets">${sets.map((set, i) => renderRecentSetChip(set, i + 1)).join('')}</div>`
     : `<div class="recent-ex-empty">No sets</div>`;
   return `
     <div class="recent-ex">
-      <div class="recent-ex-name">${escapeHtml(ex.name || 'Unnamed')}</div>
+      <div class="recent-ex-name">${escapeHtml(ex?.name || 'Unnamed')}</div>
       ${body}
     </div>`;
 }
 
 function renderRecentSetChip(set, idx) {
+  if (!set) return '';
   const reps = Number(set.reps) || 0;
   const machine = Number(set.machineWeight) || 0;
   const plate = Number(set.plateWeight) || 0;
