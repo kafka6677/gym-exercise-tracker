@@ -1039,6 +1039,177 @@ input::placeholder { color: var(--text-4); }
 
 .history-pb-badge svg { width: 10px; height: 10px; }
 
+/* ─── Routine recents (latest session per split day) ─── */
+
+.recent-stack { display: flex; flex-direction: column; gap: 14px; }
+
+.recent-card {
+  background: var(--surface);
+  border: 1px solid var(--border-subtle);
+  border-radius: var(--radius-sm);
+  overflow: hidden;
+  transition: border-color 0.15s, background 0.15s;
+}
+.recent-card.has-session { cursor: pointer; }
+.recent-card.has-session:hover,
+.recent-card.has-session:active {
+  border-color: var(--border-strong);
+  background: var(--surface-2);
+}
+.recent-card.has-pb { border-left: 3px solid var(--gold); }
+
+.recent-card-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  gap: 12px;
+  padding: 14px 18px;
+  border-bottom: 1px solid var(--border-subtle);
+}
+.recent-card:not(.has-session) > .recent-card-header { border-bottom: none; }
+
+.recent-card-title {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  flex-wrap: wrap;
+  min-width: 0;
+}
+
+.recent-card-name {
+  font-size: 16px;
+  font-weight: 700;
+  color: var(--text);
+  letter-spacing: -0.01em;
+}
+
+.recent-card-dow {
+  font-size: 10px;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  color: var(--accent);
+  background: var(--accent-dim);
+  padding: 3px 8px;
+  border-radius: 999px;
+  line-height: 1.2;
+}
+
+.recent-card-meta {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-end;
+  gap: 4px;
+  text-align: right;
+  flex-shrink: 0;
+}
+
+.recent-card-date {
+  font-size: 11px;
+  color: var(--text-2);
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+}
+
+.recent-card-stats {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  font-size: 12px;
+  color: var(--text-3);
+  font-weight: 600;
+}
+.recent-card-stats .dot { color: var(--text-3); opacity: 0.6; }
+.recent-card-stats .complete { color: var(--accent); }
+.recent-card-stats .pb {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  color: var(--gold);
+  font-weight: 700;
+  text-transform: uppercase;
+  font-size: 10px;
+  letter-spacing: 0.04em;
+}
+.recent-card-stats .pb svg { width: 10px; height: 10px; }
+.recent-card-stats .unit { font-size: 10px; color: var(--text-3); margin-left: 2px; font-weight: 500; }
+
+.recent-card-empty {
+  font-size: 12px;
+  color: var(--text-3);
+  font-style: italic;
+}
+
+.recent-ex-list { display: flex; flex-direction: column; }
+
+.recent-ex {
+  display: grid;
+  grid-template-columns: minmax(120px, 200px) 1fr;
+  gap: 14px;
+  padding: 12px 18px;
+  align-items: start;
+  border-top: 1px solid var(--border-subtle);
+}
+.recent-ex:first-child { border-top: none; }
+
+.recent-ex-name {
+  font-size: 13px;
+  font-weight: 600;
+  color: var(--text);
+  letter-spacing: -0.005em;
+  word-break: break-word;
+}
+
+.recent-ex-empty {
+  font-size: 12px;
+  color: var(--text-3);
+  font-style: italic;
+}
+
+.recent-ex-sets {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+}
+
+.recent-set {
+  display: inline-flex;
+  align-items: baseline;
+  gap: 5px;
+  background: var(--surface-2);
+  border: 1px solid var(--border-subtle);
+  border-radius: 7px;
+  padding: 5px 9px;
+  font-size: 12px;
+  color: var(--text-2);
+  font-weight: 600;
+  white-space: nowrap;
+  line-height: 1.1;
+}
+.recent-set.done {
+  background: var(--accent-dim);
+  border-color: rgba(16, 185, 129, 0.25);
+  color: var(--text);
+}
+
+.recent-set-num {
+  font-size: 9px;
+  font-weight: 800;
+  color: var(--text-3);
+  background: var(--surface-3);
+  padding: 1px 5px;
+  border-radius: 4px;
+  letter-spacing: 0.05em;
+}
+.recent-set.done .recent-set-num { color: var(--accent); background: rgba(16, 185, 129, 0.18); }
+
+.recent-set-weight { color: var(--text); font-weight: 700; }
+.recent-set-weight .unit { font-size: 9px; color: var(--text-3); font-weight: 500; margin-left: 1px; }
+.recent-set-plus { color: var(--text-3); font-weight: 500; margin: 0 1px; }
+.recent-set-x { color: var(--text-3); margin: 0 2px; font-weight: 500; }
+.recent-set-reps { color: var(--text); font-weight: 700; }
+
 /* ─── Records ────────────────────────────── */
 
 .records-wrap { max-width: 920px; margin: 0 auto; }
@@ -2220,6 +2391,14 @@ input::placeholder { color: var(--text-4); }
   .record-row { grid-template-columns: 1fr auto auto; padding: 12px 14px; gap: 10px; min-height: 60px; }
   .record-row > .record-date { display: none; }
 
+  /* Routine recents — stack name + sets vertically, tighten card padding. */
+  .recent-card-header { padding: 12px 14px; flex-wrap: wrap; gap: 8px; }
+  .recent-card-name { font-size: 15px; }
+  .recent-card-meta { align-items: flex-end; }
+  .recent-ex { grid-template-columns: 1fr; gap: 8px; padding: 10px 14px; }
+  .recent-ex-name { font-size: 13px; }
+  .recent-set { padding: 5px 8px; font-size: 12px; }
+
   /* Routine — same single-row structure as desktop, just narrower columns. */
   .routine-day-header { padding: 12px 14px; flex-wrap: wrap; gap: 8px; }
   .routine-day-name { font-size: 16px; }
@@ -2440,7 +2619,7 @@ input::placeholder { color: var(--text-4); }
    VERSION
    ──────────────────────────────────────────── */
 
-const APP_VERSION = '1.8.5';
+const APP_VERSION = '1.8.6';
 const APP_BUILD_DATE = '2026-05-05';
 
 /* ────────────────────────────────────────────
@@ -2455,7 +2634,7 @@ const state = {
   activeId: null,
   draft: null,         // unsaved in-progress session (not on calendar / in history)
   view: 'home',
-  historySub: 'sessions',
+  historySub: 'routine',
 };
 
 let pendingFocus = null;
@@ -2534,7 +2713,8 @@ function ensureValid() {
   if (state.activeId && !getSession(state.activeId)) state.activeId = null;
   if (state.view === 'records') { state.view = 'history'; state.historySub = 'records'; }
   if (!['home', 'train', 'history', 'routine', 'settings'].includes(state.view)) state.view = 'home';
-  if (!['sessions', 'records'].includes(state.historySub)) state.historySub = 'sessions';
+  if (state.historySub === 'sessions') state.historySub = 'routine'; // migrated from old "Sessions" tab
+  if (!['routine', 'records'].includes(state.historySub)) state.historySub = 'routine';
 
   // Migrate set.weight → set.machineWeight + set.plateWeight
   const migrateSets = (sess) => {
@@ -4134,12 +4314,12 @@ function renderSessionSet(session, ex, set, num) {
 /* ─── HISTORY ─── */
 
 function renderHistory() {
-  const sub = state.historySub || 'sessions';
+  const sub = state.historySub || 'routine';
   const subTabsHtml = `
     <div class="sub-tabs">
-      <button class="sub-tab ${sub === 'sessions' ? 'active' : ''}" data-history-sub="sessions">
-        <svg viewBox="0 0 24 24" width="14" height="14"><use href="#icon-history"/></svg>
-        Sessions
+      <button class="sub-tab ${sub === 'routine' ? 'active' : ''}" data-history-sub="routine">
+        <svg viewBox="0 0 24 24" width="14" height="14"><use href="#icon-dumbbell"/></svg>
+        Routine
       </button>
       <button class="sub-tab ${sub === 'records' ? 'active' : ''}" data-history-sub="records">
         <svg viewBox="0 0 24 24" width="14" height="14"><use href="#icon-trophy"/></svg>
@@ -4147,12 +4327,7 @@ function renderHistory() {
       </button>
     </div>`;
 
-  let body;
-  if (sub === 'records') {
-    body = renderRecordsBody();
-  } else {
-    body = renderSessionsBody();
-  }
+  const body = sub === 'records' ? renderRecordsBody() : renderRoutineRecentBody();
 
   return `
     <div class="history-wrap">
@@ -4167,38 +4342,116 @@ function renderHistory() {
     </div>`;
 }
 
-function renderSessionsBody() {
-  if (!state.sessions.length) {
+function latestSessionForSplitDay(day) {
+  const dayName = (day.name || '').trim().toLowerCase();
+  const matches = state.sessions.filter(s => {
+    if (s.dayId && day.id && s.dayId === day.id) return true;
+    if (!s.dayId && dayName && s.dayName && s.dayName.trim().toLowerCase() === dayName) return true;
+    return false;
+  });
+  if (!matches.length) return null;
+  matches.sort((a, b) => {
+    const ka = a.createdAt || a.date || '';
+    const kb = b.createdAt || b.date || '';
+    return kb.localeCompare(ka);
+  });
+  return matches[0];
+}
+
+function renderRoutineRecentBody() {
+  const days = state.split?.days || [];
+  if (!days.length) {
     return `
       <div class="empty-state">
-        <div class="empty-icon"><svg viewBox="0 0 24 24"><use href="#icon-history"/></svg></div>
-        <div class="empty-text">No history yet</div>
-        <div class="empty-sub">Log your first session and it'll show up here.</div>
-        <button class="btn btn-primary btn-lg" data-goto-train>Start a workout</button>
+        <div class="empty-icon"><svg viewBox="0 0 24 24"><use href="#icon-dumbbell"/></svg></div>
+        <div class="empty-text">No split set up yet</div>
+        <div class="empty-sub">Add days to your split, then log a workout to see them here.</div>
+        <button class="btn btn-primary btn-lg" data-goto-routine>Set up split</button>
       </div>`;
   }
+  return `<div class="recent-stack">${days.map(d => renderRecentDayCard(d)).join('')}</div>`;
+}
 
-  const groups = new Map();
-  for (const s of state.sessions) {
-    const d = parseISO(s.date);
-    const key = d ? `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, '0')}` : 'Unknown';
-    if (!groups.has(key)) groups.set(key, []);
-    groups.get(key).push(s);
-  }
+function renderRecentDayCard(day) {
+  const session = latestSessionForSplitDay(day);
+  const dayName = (day.name || '').trim() || 'Untitled day';
+  const dowLabel = day.dayOfWeek != null ? DOW_LABELS_SHORT[day.dayOfWeek] : '';
+  const dowPill = dowLabel ? `<div class="recent-card-dow">${escapeHtml(dowLabel)}</div>` : '';
 
-  const keys = Array.from(groups.keys()).sort().reverse();
-  return keys.map(key => {
-    const sessions = groups.get(key);
-    const [y, m] = key.split('-').map(Number);
-    const label = key === 'Unknown'
-      ? 'Unknown date'
-      : new Date(y, m - 1, 1).toLocaleDateString(undefined, { month: 'long', year: 'numeric' });
+  if (!session) {
     return `
-      <div class="history-group">
-        <div class="history-group-header">${escapeHtml(label)}</div>
-        ${sessions.map(s => renderHistoryRow(s)).join('')}
+      <div class="recent-card">
+        <div class="recent-card-header">
+          <div class="recent-card-title">
+            <div class="recent-card-name">${escapeHtml(dayName)}</div>
+            ${dowPill}
+          </div>
+          <div class="recent-card-meta">
+            <div class="recent-card-empty">No sessions yet</div>
+          </div>
+        </div>
       </div>`;
-  }).join('');
+  }
+
+  const totalSets = sessionTotalSets(session);
+  const done = sessionCompletedSets(session);
+  const vol = sessionVolume(session);
+  const isComplete = totalSets > 0 && done === totalSets;
+  const dateLabel = daysAgoText(session.date) || formatDateShort(session.date);
+  const pbCount = sessionHitPBCount(session);
+  const pbBadge = pbCount
+    ? `<span class="dot">·</span><span class="pb"><svg viewBox="0 0 24 24"><use href="#icon-flame"/></svg>${pbCount} PB${pbCount > 1 ? 's' : ''}</span>`
+    : '';
+
+  return `
+    <div class="recent-card has-session ${pbCount ? 'has-pb' : ''}" data-open-session="${session.id}" role="button" tabindex="0">
+      <div class="recent-card-header">
+        <div class="recent-card-title">
+          <div class="recent-card-name">${escapeHtml(dayName)}</div>
+          ${dowPill}
+        </div>
+        <div class="recent-card-meta">
+          <div class="recent-card-date">${escapeHtml(dateLabel)}</div>
+          <div class="recent-card-stats">
+            <span>${formatVolume(vol)}<span class="unit"> kg</span></span>
+            <span class="dot">·</span>
+            <span class="${isComplete ? 'complete' : ''}">${done}/${totalSets} sets</span>
+            ${pbBadge}
+          </div>
+        </div>
+      </div>
+      <div class="recent-ex-list">
+        ${session.exercises.map(ex => renderRecentExerciseRow(ex)).join('')}
+      </div>
+    </div>`;
+}
+
+function renderRecentExerciseRow(ex) {
+  const sets = ex.sets || [];
+  const body = sets.length
+    ? `<div class="recent-ex-sets">${sets.map((set, i) => renderRecentSetChip(set, i + 1)).join('')}</div>`
+    : `<div class="recent-ex-empty">No sets</div>`;
+  return `
+    <div class="recent-ex">
+      <div class="recent-ex-name">${escapeHtml(ex.name || 'Unnamed')}</div>
+      ${body}
+    </div>`;
+}
+
+function renderRecentSetChip(set, idx) {
+  const reps = Number(set.reps) || 0;
+  const machine = Number(set.machineWeight) || 0;
+  const plate = Number(set.plateWeight) || 0;
+  const weightStr = plate > 0
+    ? `${formatWeight(machine)}<span class="recent-set-plus">+</span>${formatWeight(plate)}`
+    : formatWeight(machine + plate);
+  return `
+    <div class="recent-set ${set.complete ? 'done' : ''}">
+      <span class="recent-set-num">${idx}</span>
+      <span class="recent-set-weight">${weightStr}<span class="unit"> kg</span></span>
+      <span class="recent-set-x">×</span>
+      <span class="recent-set-reps">${reps}</span>
+    </div>`;
 }
 
 function renderRecordsBody() {
@@ -4223,39 +4476,6 @@ function renderRecordsBody() {
       value="${escapeHtml(recordsSearchQuery)}"
     />
     <div class="records-grid">${recordRowsHtml(filtered)}</div>`;
-}
-
-function renderHistoryRow(s) {
-  const totalSets = sessionTotalSets(s);
-  const done = sessionCompletedSets(s);
-  const vol = sessionVolume(s);
-  const pbCount = sessionHitPBCount(s);
-  const isComplete = totalSets > 0 && done === totalSets;
-  const progressLabel = totalSets > 0 ? `${done}/${totalSets}` : '—';
-  const d = parseISO(s.date);
-  const dayLabel = d ? d.toLocaleDateString(undefined, { weekday: 'short' }) : '';
-  const dayNum = d ? d.getDate() : '';
-  const name = s.dayName?.trim() || formatDateLong(s.date);
-  const isMuted = !s.dayName?.trim();
-
-  return `
-    <button class="history-row ${pbCount ? 'has-pb' : ''}" data-open-session="${s.id}">
-      <div class="history-date">
-        <div class="history-date-dow">${escapeHtml(dayLabel)}</div>
-        <div class="history-date-num">${dayNum}</div>
-      </div>
-      <div class="history-main">
-        <div class="history-name-row">
-          <div class="history-name ${isMuted ? 'muted' : ''}">${escapeHtml(name)}</div>
-          ${pbCount ? `<span class="history-pb-badge"><svg viewBox="0 0 24 24"><use href="#icon-flame"/></svg>${pbCount} PB${pbCount > 1 ? 's' : ''}</span>` : ''}
-        </div>
-        <div class="history-stats">${s.exercises.length} ex · ${totalSets} sets · ${sessionTotalReps(s)} reps</div>
-      </div>
-      <div class="history-side">
-        <div class="history-volume">${formatVolume(vol)}<span class="unit"> kg</span></div>
-        <div class="history-progress ${isComplete ? 'complete' : ''}">${progressLabel}</div>
-      </div>
-    </button>`;
 }
 
 /* ─── RECORDS ─── */
@@ -4789,7 +5009,7 @@ function attachHistoryHandlers() {
       saveState();
       const body = $('#history-body');
       if (body) {
-        body.innerHTML = state.historySub === 'records' ? renderRecordsBody() : renderSessionsBody();
+        body.innerHTML = state.historySub === 'records' ? renderRecordsBody() : renderRoutineRecentBody();
         attachHistoryBodyHandlers();
       }
       $$('[data-history-sub]').forEach(b => b.classList.toggle('active', b.dataset.historySub === state.historySub));
@@ -4804,6 +5024,9 @@ function attachHistoryBodyHandlers() {
   });
   $$('[data-goto-train]').forEach(el => {
     el.addEventListener('click', () => setView('train'));
+  });
+  $$('[data-goto-routine]').forEach(el => {
+    el.addEventListener('click', () => setView('routine'));
   });
   // Records search (only present when records sub-tab is active)
   const search = $('#records-search');
